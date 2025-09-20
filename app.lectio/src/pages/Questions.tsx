@@ -113,7 +113,7 @@ export function Questions() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background">
+      <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background">
         <div className="text-center">
           <MotionSpinner />
           <p className="text-foreground">Carregando questões...</p>
@@ -124,7 +124,7 @@ export function Questions() {
 
   if (error) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background p-6">
+      <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background p-6">
         <Card className="w-full max-w-md border-red-500/20">
           <CardHeader>
             <CardTitle className="text-red-500">
@@ -149,7 +149,7 @@ export function Questions() {
 
   if (!data || !data.questions || data.questions.length === 0) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background p-6">
+      <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background p-6">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Nenhuma questão disponível</CardTitle>
@@ -173,7 +173,7 @@ export function Questions() {
   // Tela de conclusão quando todas as questões forem respondidas
   if (allQuestionsAnswered && !reviewMode) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background p-6">
+      <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background p-6">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -270,7 +270,7 @@ export function Questions() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background p-4 md:p-6 gap-4">
+    <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background p-4 md:p-6 gap-4">
       {/* Header para o modo de revisão */}
       {reviewMode && (
         <div className="w-full max-w-2xl">

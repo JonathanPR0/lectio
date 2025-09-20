@@ -65,7 +65,7 @@ export function Statistics() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+      <div className="min-h-[calc(100dvh-4rem)] flex items-center justify-center">
         <div className="text-center">
           <MotionSpinner className="h-16 w-16 border-4 border-primary border-t-transparent mx-auto mb-4" />
           <p className="text-foreground">Carregando suas estatísticas...</p>
@@ -76,7 +76,7 @@ export function Statistics() {
 
   if (!profile) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
+      <div className="min-h-[calc(100dvh-4rem)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Perfil não encontrado</CardTitle>
