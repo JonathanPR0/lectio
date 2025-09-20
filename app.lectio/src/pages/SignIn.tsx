@@ -44,7 +44,7 @@ export function SignIn() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
+    <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background px-4">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

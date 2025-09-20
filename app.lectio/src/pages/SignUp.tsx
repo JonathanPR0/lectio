@@ -25,6 +25,7 @@ interface IFormData {
   username: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export function SignUp() {
@@ -36,6 +37,7 @@ export function SignUp() {
       username: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -46,9 +48,19 @@ export function SignUp() {
         await AuthService.signUp({ username, email, password });
         toast.success("Conta criada com sucesso!");
         navigate("/");
-      } catch (error) {
-        console.error(error);
-        toast.error("Erro ao criar conta. Por favor, tente novamente.");
+      } catch (error: any) {
+        if (error.response?.data) {
+          const { code } = error.response.data.error as {
+            message?: string;
+            code?: string;
+          };
+
+          if (code === "EMAIL_ALREADY_IN_USE") {
+            toast.error("Este e-mail já está em uso. Use outro e-mail.");
+          } else {
+            toast.error("Erro ao criar conta. Por favor, tente novamente.");
+          }
+        }
       } finally {
         setIsLoading(false);
       }
@@ -56,7 +68,7 @@ export function SignUp() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-8">
+    <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background px-4 py-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -163,6 +175,28 @@ export function SignUp() {
                 {form.formState.errors.password && (
                   <p className="text-red-500 text-xs mt-1">
                     {form.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirme sua senha"
+                  className="border-primary/20 focus-visible:ring-primary"
+                  {...form.register("confirmPassword", {
+                    required: "Confirmação de senha é obrigatória",
+                    validate: (value) => {
+                      const password = form.getValues("password");
+                      return value === password || "As senhas não coincidem";
+                    },
+                  })}
+                />
+                {form.formState.errors.confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {form.formState.errors.confirmPassword.message}
                   </p>
                 )}
               </div>

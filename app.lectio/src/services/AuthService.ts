@@ -51,7 +51,7 @@ export class AuthService {
 
   static async signUp({ username, email, password }: ISignUpDTO) {
     const points = this.getUserScore();
-    const { data } = await httpClient.post("/signup", {
+    const { data } = await httpClient.post("/auth/sign-up", {
       username,
       email,
       password,
