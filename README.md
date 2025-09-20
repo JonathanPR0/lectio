@@ -1,7 +1,7 @@
 # 📖 Lectio
 
 <div align="center">
-  <img src="app.lection/src/assets/logo.webp" alt="Lectio Logo" width="200" height="200">
+  <img src="app.lectio/src/assets/logo.webp" alt="Lectio Logo" width="200" height="200">
   
   **Um quiz gamificado sobre textos bíblicos diários**
   
@@ -28,7 +28,7 @@ O **Lectio** é uma aplicação web gamificada que transforma o estudo bíblico 
 
 ## 🏗️ Arquitetura
 
-### Frontend (`app.lection/`)
+### Frontend (`app.lectio/`)
 
 - **React 19** com TypeScript
 - **Vite** para build e desenvolvimento
@@ -125,7 +125,7 @@ cp .env.example .env
 ### 3. Configure o Frontend
 
 ```bash
-cd ../app.lection
+cd ../app.lectio
 npm install
 
 # Configure as variáveis de ambiente
@@ -143,7 +143,7 @@ npx serverless deploy --stage dev
 ### 5. Execute o Frontend
 
 ```bash
-cd ../app.lection
+cd ../app.lectio
 npm run dev
 ```
 
@@ -191,7 +191,7 @@ npx serverless deploy # Deploy para AWS
 
 ```
 lection/
-├── app.lection/                 # Frontend React
+├── app.lectio/                 # Frontend React
 │   ├── src/
 │   │   ├── components/         # Componentes reutilizáveis
 │   │   ├── pages/             # Páginas da aplicação
