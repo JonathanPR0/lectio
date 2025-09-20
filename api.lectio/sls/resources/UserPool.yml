@@ -23,9 +23,9 @@ Resources:
       Policies:
         PasswordPolicy:
           MinimumLength: 8
-          RequireUppercase: true
-          RequireLowercase: true
-          RequireNumbers: true
+          RequireUppercase: false
+          RequireLowercase: false
+          RequireNumbers: false
           RequireSymbols: false
       LambdaConfig:
         PreTokenGenerationConfig:

@@ -1,4 +1,10 @@
-import { GetCommand, PutCommand, PutCommandInput, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  PutCommandInput,
+  QueryCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { dynamoClient } from "@infra/clients/dynamoClient";
 import { Injectable } from "@kernel/decorators/Injectable";
 import { Profile } from "src/entities/Profile";
@@ -24,6 +30,27 @@ export class ProfileRepository {
     }
 
     return ProfileItem.toEntity(profileItem as ProfileItem.ItemType);
+  }
+
+  async findByUsername(username: string): Promise<Profile | null> {
+    const command = new QueryCommand({
+      TableName: this.config.db.dynamodb.mainTable,
+      IndexName: "GSI1",
+      KeyConditionExpression: "GSI1PK = :gsi1pk AND GSI1SK = :gsi1sk",
+      ExpressionAttributeValues: {
+        ":gsi1pk": ProfileItem.getGSI1PK(username),
+        ":gsi1sk": ProfileItem.getGSI1SK(),
+      },
+      Limit: 1,
+    });
+
+    const { Items = [] } = await dynamoClient.send(command);
+
+    if (!Items || Items.length === 0) {
+      return null;
+    }
+
+    return ProfileItem.toEntity(Items[0] as ProfileItem.ItemType);
   }
 
   async save(profile: Profile) {

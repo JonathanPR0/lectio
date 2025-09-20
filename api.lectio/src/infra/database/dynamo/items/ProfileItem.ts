@@ -8,7 +8,7 @@ export class ProfileItem {
     this.keys = {
       PK: ProfileItem.getPK(attrs.accountId),
       SK: ProfileItem.getSK(),
-      GSI1PK: ProfileItem.getGSI1PK(attrs.accountId),
+      GSI1PK: ProfileItem.getGSI1PK(attrs.username),
       GSI1SK: ProfileItem.getGSI1SK(),
     };
   }

@@ -1,4 +1,5 @@
 import logo from "@/assets/logo.svg"; // Importa a imagem diretamente
+import { MotionSpinner } from "@/components/custom/MotionSpinner";
 import { Button } from "@/components/ui/Button";
 import {
   Card,
@@ -36,7 +37,7 @@ export function SignIn() {
 
   const handleSubmit = form.handleSubmit(async ({ email, password }) => {
     try {
-      await signIn(email, password);
+      await signIn({ email, password });
       toast.success("Login realizado com sucesso!");
     } catch {
       toast.error("Credenciais inválidas!");
@@ -122,7 +123,7 @@ export function SignIn() {
               >
                 {form.formState.isSubmitting ? (
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                    <MotionSpinner />
                     Entrando...
                   </div>
                 ) : (

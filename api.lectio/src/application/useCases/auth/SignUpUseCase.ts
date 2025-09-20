@@ -1,5 +1,7 @@
 import { EmailAlreadyInUse } from "@application/errors/application/EmailAlreadyInUse";
+import { UsernameAlreadyInUse } from "@application/errors/application/UsernameAlreadyInUse";
 import { AccountRepository } from "@infra/database/dynamo/repositories/AccountRepository";
+import { ProfileRepository } from "@infra/database/dynamo/repositories/ProfileRepository";
 import { SignUpUnitOfWork } from "@infra/database/dynamo/uow/SignUpUnitOfWork";
 import { AuthGateway } from "@infra/gateways/AuthGateway";
 import { Injectable } from "@kernel/decorators/Injectable";
@@ -12,6 +14,7 @@ export class SignUpUseCase {
   constructor(
     private readonly authGateway: AuthGateway,
     private readonly accountRepository: AccountRepository,
+    private readonly profileRepository: ProfileRepository,
     private readonly signUpUow: SignUpUnitOfWork
   ) {}
   async execute({
@@ -23,6 +26,10 @@ export class SignUpUseCase {
     const emailAlreadyInUse = await this.accountRepository.findByEmail(email);
     if (emailAlreadyInUse) {
       throw new EmailAlreadyInUse();
+    }
+    const usernameAlreadyInUse = await this.profileRepository.findByUsername(username);
+    if (usernameAlreadyInUse) {
+      throw new UsernameAlreadyInUse();
     }
 
     const account = new Account({ email });

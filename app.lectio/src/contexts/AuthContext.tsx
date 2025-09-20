@@ -5,7 +5,12 @@ import { createContext, useCallback, useLayoutEffect, useState } from "react";
 
 interface IAuthContextValue {
   signedIn: boolean;
-  signIn(email: string, password: string): Promise<void>;
+  signIn(params: { email: string; password: string }): Promise<void>;
+  signUp(params: {
+    email: string;
+    password: string;
+    username: string;
+  }): Promise<void>;
   signOut(): void;
 }
 
@@ -65,17 +70,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const { accessToken, refreshToken } = await AuthService.signIn({
+  const signIn = useCallback(
+    async ({ email, password }: { email: string; password: string }) => {
+      const { accessToken, refreshToken } = await AuthService.signIn({
+        email,
+        password,
+      });
+
+      localStorage.setItem(storageKeys.accessToken, accessToken);
+      localStorage.setItem(storageKeys.refreshToken, refreshToken);
+
+      setSignedIn(true);
+    },
+    [],
+  );
+
+  const signUp = useCallback(
+    async ({
       email,
       password,
-    });
+      username,
+    }: {
+      email: string;
+      password: string;
+      username: string;
+    }) => {
+      const { accessToken, refreshToken } = await AuthService.signUp({
+        email,
+        password,
+        username,
+      });
 
-    localStorage.setItem(storageKeys.accessToken, accessToken);
-    localStorage.setItem(storageKeys.refreshToken, refreshToken);
+      localStorage.setItem(storageKeys.accessToken, accessToken);
+      localStorage.setItem(storageKeys.refreshToken, refreshToken);
 
-    setSignedIn(true);
-  }, []);
+      setSignedIn(true);
+    },
+    [],
+  );
 
   const signOut = useCallback(() => {
     localStorage.removeItem(storageKeys.accessToken);
@@ -86,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value: IAuthContextValue = {
     signedIn,
     signIn,
+    signUp,
     signOut,
   };
 

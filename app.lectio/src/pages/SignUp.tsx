@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 // Importe o logo se estiver disponível
 import logo from "@/assets/logo.svg";
+import { MotionSpinner } from "@/components/custom/MotionSpinner";
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AuthService } from "@/services/AuthService";
+import { useAuth } from "@/hooks/useAuth";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 
 interface IFormData {
@@ -30,6 +31,8 @@ interface IFormData {
 
 export function SignUp() {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<IFormData>({
@@ -45,10 +48,13 @@ export function SignUp() {
     async ({ username, email, password }) => {
       try {
         setIsLoading(true);
-        await AuthService.signUp({ username, email, password });
+        await signUp({ username, email, password });
+
         toast.success("Conta criada com sucesso!");
         navigate("/");
       } catch (error: any) {
+        console.log(error);
+
         if (error.response?.data) {
           const { code } = error.response.data.error as {
             message?: string;
@@ -57,6 +63,8 @@ export function SignUp() {
 
           if (code === "EMAIL_ALREADY_IN_USE") {
             toast.error("Este e-mail já está em uso. Use outro e-mail.");
+          } else if (code === "USERNAME_ALREADY_IN_USE") {
+            toast.error("Este apelido já está em uso. Escolha outro apelido.");
           } else {
             toast.error("Erro ao criar conta. Por favor, tente novamente.");
           }
@@ -214,7 +222,7 @@ export function SignUp() {
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                  <MotionSpinner />
                   Criando conta...
                 </div>
               ) : (
