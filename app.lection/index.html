@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Lectio</title>
+    <meta name="title" content="Lectio - Quiz Game" />
+    <meta name="keywords" content="
+    Lectio, leitura diária, texto diário, estudo bíblico, perguntas bíblicas, jogo cristão, gamificação, incentivo leitura, escudos da fé, ofensiva, pontos, aprendizado divertido, site interativo, quiz diário, motivação espiritual
+    ">
+    <meta name="author" content="Lectio" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Portuguese" />
+    <meta name="revisit-after" content="7 days" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://lectioquiz.vercel.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lectioquiz.vercel.app/" />
+    <meta property="og:title" content="Lectio - Quiz Game" />
+    <meta property="og:image" content="./og-img.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Lectio" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter Cards (também usado pelo WhatsApp) -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lectioquiz.vercel.app/og-img.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png"/>
+    <link rel="manifest" href="./site.webmanifest" />
+
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  </head>
+  <body>
+    <!-- Skip to main content for accessibility -->
+    <!-- <a href="#main-content" class="sr-only">Pular para o conteúdo principal</a> -->
+
+    <!-- Loader que será mostrado enquanto a página carrega -->
+    <div id="loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: #fff; z-index: 9999; transition: opacity 0.5s ease-out;">
+      <div style="text-align: center;">
+        <img src="/src/assets/logo.webp" alt="Lectio Logo" style="width: 120px;">
+        <div style="margin-top: 20px;">
+          <div style="width: 40px; height: 40px; margin: 0 auto; border: 4px solid rgba(130, 196, 100, 0.3); border-radius: 50%; border-top-color: #82c464; animation: loader-spin 1s linear infinite;"></div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes loader-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+
+    <script>
+      // Esconde o loader quando a página terminar de carregar
+      window.addEventListener('load', function() {
+        const loader = document.getElementById('loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => {
+            loader.style.display = 'none';
+          }, 500);
+        }
+      });
+    </script>
+
+    <!-- Main application container -->
+    <div id="root" role="main" aria-label="Aplicação principal"></div>
+
+    <!-- Structured data for breadcrumbs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://lectioquiz.vercel.app/"
+        }
+      ]
+    }
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

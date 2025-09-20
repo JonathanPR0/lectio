@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "target": "ES2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict":true,
+    "skipLibCheck":true,
+    "noImplicitOverride": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "baseUrl": ".",
+    "paths":{
+      "@application/*": ["src/application/*"],
+      "@controllers/*": ["src/application/controllers/*"],
+      "@contracts/*": ["src/application/contracts*"],
+      "@errors/*": ["src/application/errors/*"],
+      "@useCases/*": ["src/application/useCases/*"],
+      "@kernel/*": ["src/kernel/*"],
+      "@main/*": ["src/main/*"],
+      "@adapters/*": ["src/main/adapters*"],
+      "@functions/*": ["src/main/functions*"],
+      "@utils/*": ["src/main/utils*"],
+      "@infra/*": ["src/infra/*"],
+    }
+  },
+
+}

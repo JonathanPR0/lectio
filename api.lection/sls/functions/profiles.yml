@@ -1,0 +1,25 @@
+getProfileByAccountId:
+  handler: src/main/functions/profiles/getProfileByAccountId.handler
+  events:
+    - httpApi:
+        method: GET
+        path: /profiles
+        authorizer:
+          name: CognitoAuthorizer
+updateProfile:
+  handler: src/main/functions/profiles/updateProfile.handler
+  events:
+    - httpApi:
+        method: PUT
+        path: /profiles
+        authorizer:
+          name: CognitoAuthorizer
+
+buyShield:
+  handler: src/main/functions/profiles/buyShield.handler
+  events:
+    - httpApi:
+        method: PUT
+        path: /profiles/buy-shield
+        authorizer:
+          name: CognitoAuthorizer

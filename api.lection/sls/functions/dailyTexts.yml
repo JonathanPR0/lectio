@@ -1,0 +1,16 @@
+scrapMonthDailyTexts:
+  handler: src/main/functions/dailyTexts/scrapMonthDailyTexts.handler
+  memorySize: 1024
+  timeout: 900
+  events:
+    - schedule: cron(0 3 1 * ? *) # Executa todo dia 01 às 03:00 UTC
+    # - schedule: cron(0/2 * * * ? *) # Executa a cada 2 minutos (para testes)
+
+processDailyTextQueue:
+  handler: src/main/functions/dailyTexts/processDailyTextQueue.handler
+  memorySize: 1024
+  timeout: 120
+  events:
+    - sqs:
+        arn: !GetAtt DailyTextsQueue.Arn
+        batchSize: 2

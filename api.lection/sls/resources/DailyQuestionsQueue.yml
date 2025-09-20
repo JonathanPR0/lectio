@@ -1,0 +1,35 @@
+Resources:
+  DailyQuestionsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-${self:provider.stage}-DailyQuestionsQueue
+      VisibilityTimeout: 130
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        maxReceiveCount: 2
+        deadLetterTargetArn: !GetAtt DailyQuestionsDLQ.Arn
+
+  DailyQuestionsDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-${self:provider.stage}-DailyQuestionsDLQ
+      MessageRetentionPeriod: 1209600 # 14 days
+
+  DailyQuestionsDLQAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ${self:service}-${self:provider.stage}-DailyQuestionsDLQAlarm
+      AlarmDescription: Triggered when messages are found in FilesDLQ
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt DailyQuestionsDLQ.QueueName
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanThreshold
+      Threshold: 0
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref DLQAlarmsTopic

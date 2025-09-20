@@ -1,0 +1,50 @@
+{
+  "name": "lectio-api",
+  "version": "1.0.0",
+  "description": "API for lectio application",
+  "main": "handler.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .js,.ts",
+    "dev:email": "email dev --dir src/infra/emails/templates"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "@types/aws-lambda": "^8.10.152",
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.7",
+    "@types/react-dom": "^19.1.6",
+    "esbuild-plugin-tsc": "^0.5.0",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0",
+    "react-email": "4.2.8",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.879.0",
+    "@aws-sdk/client-dynamodb": "^3.879.0",
+    "@aws-sdk/client-s3": "^3.832.0",
+    "@aws-sdk/client-sqs": "^3.886.0",
+    "@aws-sdk/lib-dynamodb": "^3.879.0",
+    "@aws-sdk/s3-presigned-post": "^3.832.0",
+    "@react-email/components": "0.5.2",
+    "@react-email/tailwind": "^1.0.5",
+    "axios": "^1.12.2",
+    "cheerio": "^1.1.2",
+    "date-fns": "^4.1.0",
+    "ksuid": "^3.0.0",
+    "openai": "^5.12.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "reflect-metadata": "^0.2.2",
+    "ts-dedent": "^2.2.0",
+    "zod": "^3.25.76"
+  }
+}

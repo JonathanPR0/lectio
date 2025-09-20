@@ -1,0 +1,31 @@
+# createDailyQuestions:
+#   handler: src/main/functions/questions/createDailyQuestions.handler
+#   events:
+#     - httpApi:
+#         method: POST
+#         path: /questions
+#         authorizer:
+#           name: CognitoAuthorizer
+
+getDailyQuestionsByDate:
+  handler: src/main/functions/questions/getDailyQuestionsByDate.handler
+  events:
+    - httpApi:
+        method: GET
+        path: /questions
+
+answerQuestion:
+  handler: src/main/functions/questions/answerQuestion.handler
+  events:
+    - httpApi:
+        method: PUT
+        path: /questions/answer
+
+createDailyQuestionsQueue:
+  handler: src/main/functions/questions/createDailyQuestionsQueue.handler
+  # memorySize: 256
+  timeout: 120
+  events:
+    - sqs:
+        arn: !GetAtt DailyQuestionsQueue.Arn
+        batchSize: 2

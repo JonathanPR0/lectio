@@ -1,0 +1,35 @@
+Resources:
+  DailyTextsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-${self:provider.stage}-DailyTextsQueue
+      VisibilityTimeout: 130
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        maxReceiveCount: 2
+        deadLetterTargetArn: !GetAtt DailyTextsDLQ.Arn
+
+  DailyTextsDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-${self:provider.stage}-DailyTextsDLQ
+      MessageRetentionPeriod: 1209600 # 14 days
+
+  DailyTextsDLQAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ${self:service}-${self:provider.stage}-DailyTextsDLQAlarm
+      AlarmDescription: Triggered when messages are found in FilesDLQ
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt DailyTextsDLQ.QueueName
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanThreshold
+      Threshold: 0
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref DLQAlarmsTopic
