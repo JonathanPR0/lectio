@@ -1,6 +1,7 @@
 // src/hooks/useQuestions.ts
 import { httpClient } from "@/services/httpClient";
 import { useAnswersStore, type AnswerResponse } from "@/store/answersStore";
+import { normalizeLocalDate } from "@/utils/normalizers";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -49,7 +50,9 @@ export function useQuestions() {
     queryKey: ["questions"],
     queryFn: async () => {
       const response = await httpClient.get<QuestionsResponse>("/questions", {
-        params: { date: new Date().toISOString().split("T")[0] },
+        params: {
+          date: normalizeLocalDate(new Date()).toISOString().split("T")[0],
+        },
       });
       return response.data;
     },

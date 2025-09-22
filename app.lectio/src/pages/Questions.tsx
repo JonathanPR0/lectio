@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuestions } from "@/hooks/useQuestions";
 import { formatDate } from "@/lib/utils";
+import { normalizeLocalDate } from "@/utils/normalizers";
 import { motion } from "framer-motion";
 import {
   BarChart2,
@@ -20,7 +21,7 @@ import {
   ChevronLeft,
   LogIn,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -67,6 +68,9 @@ export function Questions() {
   // Pontuação atual
   const currentScore = getCurrentScore();
   const totalPossiblePoints = getTotalPossiblePoints();
+
+  // Normalizar a data para o horário local (meia-noite)
+  const localDate = useMemo(() => normalizeLocalDate(data.date), [data.date]);
 
   // Verificar se todas as questões foram respondidas
   const allQuestionsAnswered =
@@ -303,9 +307,7 @@ export function Questions() {
         <div className="w-full max-w-2xl">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-2xl font-bold text-foreground">Quiz Diário</h1>
-            <p className="text-muted-foreground">
-              {formatDate(new Date(data.date))}
-            </p>
+            <p className="text-muted-foreground">{formatDate(localDate)}</p>
           </div>
 
           {/* Barra de progresso */}
