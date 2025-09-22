@@ -316,7 +316,7 @@ export function Statistics() {
               </div>
             )}
           </CardContent>
-          {profile.points > 100 && !isFullOfShields && (
+          {profile.points >= 100 && !isFullOfShields && (
             <CardFooter>
               <Button
                 onClick={handlePurchaseShield}
