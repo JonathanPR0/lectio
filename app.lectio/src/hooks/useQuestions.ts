@@ -103,6 +103,7 @@ export function useQuestions() {
 
       // Invalidar queries relevantes para forçar atualização
       queryClient.invalidateQueries({ queryKey: ["userProgress"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
 

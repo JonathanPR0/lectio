@@ -1,8 +1,8 @@
 import { ResourceNotFound } from "@application/errors/application/ResourceNotFound";
+import { StreakService } from "@application/services/StreakService";
 import { DailyQuestionsRepository } from "@infra/database/dynamo/repositories/DailyQuestionsRepository";
 import { ProfileRepository } from "@infra/database/dynamo/repositories/ProfileRepository";
 import { Injectable } from "@kernel/decorators/Injectable";
-import { calculateDaysDifference } from "utils/calculate";
 import { normalizeDate } from "utils/normalizers";
 
 @Injectable()
@@ -36,13 +36,13 @@ export class AnswerQuestionUseCase {
     }
 
     if (accountId) {
-      const profile = await this.profileRepository.findByAccountId(accountId);
+      let profile = await this.profileRepository.findByAccountId(accountId);
       if (!profile) {
         throw new ResourceNotFound("Profile not found");
       }
 
       // 1. Verifica se já respondeu essa pergunta hoje
-      const alreadyAnswered = profile.lastAnswers?.some(
+      const alreadyAnswered = profile?.lastAnswers?.some(
         (a) => a.dailyQuestionsId === idDailyQuestion && a.questionId === idQuestion
       );
 
@@ -59,23 +59,6 @@ export class AnswerQuestionUseCase {
           profile.streakCount += 1;
         }
         profile.lastActivityDate = new Date();
-      } else {
-        if (isNewDay) {
-          const hasShield = profile.shields > 0;
-          if (hasShield && profile.streakCount > 0) {
-            const daysDifference = calculateDaysDifference(new Date(), profile.lastActivityDate);
-            if (daysDifference <= profile.shields) {
-              // NÃO zera a sequência
-              profile.lastActivityDate = new Date();
-            } else {
-              // ZERA a sequência
-              profile.streakCount = 0;
-            }
-            profile.shields = Math.max(0, profile.shields - daysDifference); // Decrementa com base na diferença de dias
-          } else {
-            profile.streakCount = 0;
-          }
-        }
       }
 
       // 2. Salva a resposta no histórico
@@ -89,8 +72,29 @@ export class AnswerQuestionUseCase {
         answerIndex: question?.correctOptionIndex ?? -1,
       };
 
-      profile.lastAnswers?.push(answerToSave); // adiciona a nova resposta
-      profile.lastAnswers = profile.lastAnswers?.slice(-5); // mantém só as últimas 5 respostas
+      profile?.lastAnswers?.push(answerToSave); // adiciona a nova resposta
+      profile.lastAnswers = profile?.lastAnswers?.slice(-5); // mantém só as últimas 5 respostas
+
+      if (!response.isCorrect) {
+        // Conta quantas perguntas do dia já foram respondidas
+        const answeredQuestionsCount = profile?.lastAnswers?.filter(
+          (a) => a.dailyQuestionsId === idDailyQuestion
+        ).length;
+
+        // Conta quantas respostas corretas do dia foram dadas
+        const correctAnswersCount = profile?.lastAnswers?.filter(
+          (a) => a.dailyQuestionsId === idDailyQuestion && a.answerIndex === a.userAnswerIndex
+        ).length;
+
+        // Se errou, é um novo dia, todas as perguntas foram respondidas e nenhuma foi correta
+        if (
+          isNewDay &&
+          answeredQuestionsCount === dailyQuestions.questions.length &&
+          correctAnswersCount === 0
+        ) {
+          profile = StreakService.updateStreak(profile);
+        }
+      }
 
       await this.profileRepository.save(profile);
     }

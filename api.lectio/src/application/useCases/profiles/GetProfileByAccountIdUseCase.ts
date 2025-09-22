@@ -1,7 +1,9 @@
 import { ResourceNotFound } from "@application/errors/application/ResourceNotFound";
+import { StreakService } from "@application/services/StreakService";
 import { ProfileRepository } from "@infra/database/dynamo/repositories/ProfileRepository";
 import { Injectable } from "@kernel/decorators/Injectable";
 import { Profile } from "src/entities/Profile";
+import { calculateDaysDifference } from "utils/calculate";
 
 @Injectable()
 export class GetProfileByAccountIdUseCase {
@@ -10,10 +12,19 @@ export class GetProfileByAccountIdUseCase {
   async execute({
     accountId,
   }: GetProfileByAccountIdUseCase.Input): Promise<GetProfileByAccountIdUseCase.Output> {
-    const profile = await this.profileRepository.findByAccountId(accountId);
+    let profile = await this.profileRepository.findByAccountId(accountId);
     if (!profile) {
       throw new ResourceNotFound("Category not found.");
     }
+
+    // Calcula a diferença de dias desde a última atividade
+    const daysDifference = calculateDaysDifference(new Date(), profile.lastActivityDate);
+
+    if (daysDifference >= 1 && profile.streakCount > 0) {
+      profile = StreakService.updateStreak(profile);
+      await this.profileRepository.save(profile);
+    }
+
     return { profile };
   }
 }
