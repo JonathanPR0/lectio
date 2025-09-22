@@ -145,7 +145,7 @@ export function Statistics() {
         <Card className="border-primary/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-2xl">{profile.username}</CardTitle>
-            <CardDescription>
+            <CardDescription className="hidden">
               Membro desde{" "}
               {format(new Date(profile.createdAt), "PP", { locale: ptBR })}
             </CardDescription>
