@@ -28,9 +28,10 @@ export class AnswerQuestionUseCase {
       questionId: idQuestion,
       isCorrect: false,
       answer: question?.answer ?? "",
+      correctOptionIndex: question?.correctOptionIndex ?? -1,
     };
 
-    if (question?.options[question.correctOptionIndex]! === userAnswer) {
+    if (question?.options[question.correctOptionIndex]! == userAnswer) {
       response.isCorrect = true;
     }
 
@@ -111,5 +112,6 @@ export namespace AnswerQuestionUseCase {
     questionId: number;
     isCorrect: boolean;
     answer: string;
+    correctOptionIndex: number;
   };
 }

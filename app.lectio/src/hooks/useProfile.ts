@@ -10,6 +10,14 @@ interface Profile {
   shields: number;
   streakCount: number;
   lastActivityDate: string;
+  lastAnswers: {
+    dailyQuestionsId: string;
+    answerIndex: number;
+    questionId: number;
+    answer: string;
+    answeredAt: string;
+    userAnswerIndex: number;
+  }[];
   createdAt: string;
 }
 

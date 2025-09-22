@@ -5,7 +5,9 @@ import { persist } from "zustand/middleware";
 
 export interface AnswerResponse {
   questionId: number;
+  answerIndex: number;
   isCorrect: boolean;
+  correctOptionIndex: number;
   answer: string; // Resposta explicativa retornada pelo servidor
 }
 

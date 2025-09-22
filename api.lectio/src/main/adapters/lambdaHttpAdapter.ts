@@ -3,6 +3,7 @@ import { ApplicationError } from "@application/errors/application/ApplicationErr
 import { ErrorCode } from "@application/errors/ErrorCode";
 import { HttpError } from "@application/errors/http/HttpError";
 import { Registry } from "@kernel/di/Registry";
+import extractAccountIdFromToken from "@main/utils/extractAccountIFromToken";
 import lambdaBodyParser from "@main/utils/lambdaBodyParser";
 import { lambdaErrorResponse } from "@main/utils/lambdaErrorResponse";
 import {
@@ -24,10 +25,15 @@ export function lambdaHttpAdapter(controllerImpl: Constructor<Controller<any, un
       const params = event.pathParameters || {};
       const queryParams = event.queryStringParameters || {};
 
-      const accountId =
+      let accountId =
         event.requestContext && "authorizer" in event.requestContext
           ? (event.requestContext.authorizer.jwt.claims.internalId as string)
           : null;
+
+      // If no accountId found in context, try to extract from Authorization header
+      if (!accountId) {
+        accountId = extractAccountIdFromToken(event.headers.authorization);
+      }
 
       const response = await controller.execute({
         body,

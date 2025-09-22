@@ -68,9 +68,11 @@ export function useQuestions() {
     mutationFn: async ({
       questionId,
       optionText,
+      optionIndex,
     }: {
       questionId: number;
       optionText: string;
+      optionIndex: number;
     }) => {
       // Garantir que temos o ID da questão diária
       if (!idDailyQuestion && data) {
@@ -82,13 +84,14 @@ export function useQuestions() {
         {
           idDailyQuestion: idDailyQuestion || data?.id,
           idQuestion: questionId,
-          userAnswer: optionText, // Enviar o índice como string
+          userAnswer: optionText,
         } as AnswerRequest,
       );
 
       return {
         ...response.data,
-        questionId, // Garantir que temos o questionId no retorno
+        questionId,
+        answerIndex: optionIndex,
       };
     },
     onSuccess: (responseData) => {
@@ -101,8 +104,12 @@ export function useQuestions() {
   });
 
   // Função para responder uma pergunta
-  const answerQuestion = (questionId: number, optionText: string) => {
-    return answerMutation.mutate({ questionId, optionText });
+  const answerQuestion = (
+    questionId: number,
+    optionText: string,
+    optionIndex: number,
+  ) => {
+    return answerMutation.mutate({ questionId, optionText, optionIndex });
   };
 
   // Calcular a pontuação atual

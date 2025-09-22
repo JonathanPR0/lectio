@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/card";
 import { useProfile } from "@/hooks/useProfile";
 import { useQuestions } from "@/hooks/useQuestions";
+import { useAnswersStore, type AnswerResponse } from "@/store/answersStore";
 import { Progress } from "@radix-ui/react-progress";
 
 const MAX_SHIELDS = 2;
@@ -36,6 +37,7 @@ export function Statistics() {
   const navigate = useNavigate();
   const { profile, isLoading, purchaseShield, isPurchasing } = useProfile();
   const { getProgress } = useQuestions();
+  const { addAnswer, setDailyQuestion } = useAnswersStore();
 
   const questionProgress = getProgress();
 
@@ -62,6 +64,30 @@ export function Statistics() {
     () => (profile ? profile.shields >= MAX_SHIELDS : false),
     [profile],
   );
+
+  useEffect(() => {
+    document.title = "Estatísticas | Lectio";
+    if (profile?.lastAnswers) {
+      // Set the daily question ID from the first answer
+      const firstAnswer = profile.lastAnswers[0];
+      if (firstAnswer) {
+        setDailyQuestion(firstAnswer.dailyQuestionsId);
+      }
+
+      // Convert and store each answer
+      profile.lastAnswers.forEach((lastAnswer) => {
+        const answerResponse: AnswerResponse = {
+          questionId: lastAnswer.questionId,
+          answerIndex: lastAnswer.userAnswerIndex, // Using userAnswerIndex as answerIndex
+          correctOptionIndex: lastAnswer.answerIndex, // Using answerIndex as correctOptionIndex
+          answer: lastAnswer.answer,
+          isCorrect: lastAnswer.answerIndex === lastAnswer.userAnswerIndex, // Compare indexes to determine if correct
+        };
+
+        addAnswer(answerResponse);
+      });
+    }
+  }, [profile?.lastAnswers, addAnswer, setDailyQuestion]);
 
   if (isLoading) {
     return (
@@ -220,7 +246,9 @@ export function Statistics() {
                   <div>
                     <div className="flex justify-between mb-2 text-sm">
                       <span>Progresso</span>
-                      <span className="font-medium">{questionProgress}%</span>
+                      <span className="font-medium">
+                        {Number(questionProgress).toFixed(2)}%
+                      </span>
                     </div>
                     <Progress value={questionProgress} className="h-2" />
                   </div>

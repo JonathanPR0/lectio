@@ -83,7 +83,7 @@ export function Questions() {
 
     const selectedOptionText = currentQuestion.options[selectedOptionIndex];
 
-    answerQuestion(currentQuestion.id, selectedOptionText);
+    answerQuestion(currentQuestion.id, selectedOptionText, selectedOptionIndex);
   };
 
   // Função para ir para próxima questão
@@ -358,14 +358,12 @@ export function Questions() {
             <div className="flex flex-col space-y-2 md:space-y-3">
               {currentQuestion?.options.map((option, index) => {
                 const isSelected = selectedOptionIndex === index;
-                const isCorrectAnswer =
-                  currentAnswer?.isCorrect &&
-                  (index + 1).toString() ===
-                    currentAnswer.questionId.toString();
-                const isWrongAnswer =
+                const wasUserAnswer =
                   currentQuestionAnswered &&
-                  selectedOptionIndex === index &&
-                  !currentAnswer?.isCorrect;
+                  (currentAnswer?.answerIndex ?? 0) === index; // Subtrai 1 pois o index salvo começa em 1
+                const isCorrectAnswer =
+                  currentQuestionAnswered &&
+                  (currentAnswer?.correctOptionIndex ?? 0) === index; // Subtrai 1 pelo mesmo motivo
 
                 return (
                   <button
@@ -378,7 +376,7 @@ export function Questions() {
                         ? "border-primary bg-primary/10"
                         : isCorrectAnswer
                           ? "border-green-500 bg-green-500/10"
-                          : isWrongAnswer
+                          : wasUserAnswer && !isCorrectAnswer
                             ? "border-red-500 bg-red-500/10"
                             : "border-muted bg-card hover:border-primary/30"
                     } text-left`}
@@ -391,7 +389,7 @@ export function Questions() {
                             ? "bg-primary text-primary-foreground"
                             : isCorrectAnswer
                               ? "bg-green-500 text-white"
-                              : isWrongAnswer
+                              : wasUserAnswer && !isCorrectAnswer
                                 ? "bg-red-500 text-white"
                                 : "bg-muted text-muted-foreground"
                         }`}

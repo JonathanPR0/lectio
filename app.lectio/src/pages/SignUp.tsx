@@ -53,7 +53,7 @@ export function SignUp() {
         toast.success("Conta criada com sucesso!");
         navigate("/");
       } catch (error: any) {
-        console.log(error);
+        console.error(error);
 
         if (error.response?.data) {
           const { code } = error.response.data.error as {
