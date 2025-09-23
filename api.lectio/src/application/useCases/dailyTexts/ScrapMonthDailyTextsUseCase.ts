@@ -19,7 +19,6 @@ export class ScrapMonthDailyTextsUseCase {
       while (currentDate < endDate) {
         const dailyTexts = await ScrapDailyText.execute({ referenceDate: currentDate });
         // Envia cada texto diário para a fila
-
         for (const dailyText of dailyTexts) {
           // Validação básica antes de enfileirar
           if (dailyText.date && dailyText.themeVerse && dailyText.bibleVersicle) {

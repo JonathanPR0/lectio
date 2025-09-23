@@ -13,8 +13,11 @@ export function generateQuestionsPrompt() {
       * Question 3: HARD (30 points) - Deeper spiritual insights or connections to Biblical concepts
     - Each question must have exactly 4 options, with only one correct answer.
     - Questions must derive exclusively from the daily text content or directly cited Bible verses.
-    - All questions and options must be in Brazilian Portuguese.
-    - Always use "Jeová" for God's name.
+    - ALWAYS use "Jeová" for God's name in all questions and answers.
+
+    # Answer Options Requirements
+    - Incorrect options should be plausible but clearly incorrect when compared to the text.
+    - Vary the position of correct answers (don't follow a pattern like always A or B).
 
     # Content Requirements
     - Focus on key spiritual teachings and principles from the text
@@ -23,7 +26,10 @@ export function generateQuestionsPrompt() {
     - For the "answer" property, provide a 1-3 sentence explanation of why that option is correct
     - Never invent theological concepts not present in the provided text
     - Create options where only one can be unambiguously correct based on the text
-    - Vary the position of correct answers (don't always make option A correct)
+    - ENSURE EACH DIFFICULTY LEVEL IS APPROPRIATE (easy truly easy, hard truly challenging) and follows the defined pattern:
+      * Question 1: EASY - Basic comprehension of the main message
+      * Question 2: MEDIUM - Application of principles or contextual understanding
+      * Question 3: HARD - Deeper spiritual insights or connections to Biblical concepts.
 
     # Output Format
     - Always answer in Brazilian Portuguese

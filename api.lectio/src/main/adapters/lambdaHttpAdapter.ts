@@ -31,7 +31,7 @@ export function lambdaHttpAdapter(controllerImpl: Constructor<Controller<any, un
           : null;
 
       // If no accountId found in context, try to extract from Authorization header
-      if (!accountId) {
+      if (!accountId && event.headers?.authorization) {
         accountId = extractAccountIdFromToken(event.headers.authorization);
       }
 

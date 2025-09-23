@@ -33,6 +33,7 @@ export class ProcessDailyTextUseCase {
 
     // Atualiza a entrada de DailyQuestions com as perguntas geradas
     dailyQuestions.questions = questions;
+
     await this.dailyQuestionsRepository.save(dailyQuestions);
   }
 }

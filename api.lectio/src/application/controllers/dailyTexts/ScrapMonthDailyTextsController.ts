@@ -4,14 +4,14 @@ import { Injectable } from "@kernel/decorators/Injectable";
 
 @Injectable()
 export class ScrapMonthDailyTextsController extends Controller<
-  "public",
+  "private",
   ScrapMonthDailyTextsController.Response
 > {
   constructor(private readonly scrapMonthDailyTextsUseCase: ScrapMonthDailyTextsUseCase) {
     super();
   }
 
-  protected override async handle({}: Controller.Request<"public">): Promise<
+  protected override async handle({}: Controller.Request<"private">): Promise<
     Controller.Response<ScrapMonthDailyTextsController.Response>
   > {
     await this.scrapMonthDailyTextsUseCase.execute();
