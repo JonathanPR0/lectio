@@ -1,5 +1,6 @@
 // src/store/answersStore.ts
 import { storageKeys } from "@/config/storageKeys";
+import { getCurrentDateTimeInBrazil } from "@/utils/getCurrentDateTimeInBrazil";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -19,6 +20,7 @@ interface AnswersState {
   // Ações
   setDailyQuestion: (id: string) => void;
   addAnswer: (answer: AnswerResponse) => void;
+  setAnswers: (answers: AnswerResponse[]) => void;
   resetIfNewDay: () => void;
   getQuestionAnswer: (questionId: number) => AnswerResponse | null;
   isQuestionAnswered: (questionId: number) => boolean;
@@ -27,7 +29,7 @@ interface AnswersState {
 
 // Verificar se a data armazenada é de hoje
 const isToday = (dateString: string): boolean => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getCurrentDateTimeInBrazil().toISOString().split("T")[0];
   const storedDate = new Date(dateString).toISOString().split("T")[0];
   return today === storedDate;
 };
@@ -35,25 +37,53 @@ const isToday = (dateString: string): boolean => {
 export const useAnswersStore = create<AnswersState>()(
   persist(
     (set, get) => ({
-      date: new Date().toISOString(),
+      date: getCurrentDateTimeInBrazil().toISOString(),
       answers: {},
       idDailyQuestion: null,
 
       setDailyQuestion: (id) => set({ idDailyQuestion: id }),
 
       addAnswer: (answer) =>
-        set((state) => ({
-          answers: {
-            ...state.answers,
-            [answer.questionId]: answer,
-          },
-        })),
+        set((state) => {
+          // Verifica se a data do store é de hoje
+          if (!isToday(state.date)) {
+            // Se não for hoje, reseta completamente
+            return {
+              date: getCurrentDateTimeInBrazil().toISOString(),
+              answers: { [answer.questionId]: answer }, // Começa novo objeto apenas com a resposta atual
+              idDailyQuestion: state.idDailyQuestion, // Mantém o ID da questão diária
+            };
+          }
+
+          // A data do store é de hoje, mas pode haver respostas antigas
+          // Vamos manter as respostas existentes e adicionar/atualizar a nova
+          return {
+            answers: {
+              ...state.answers,
+              [answer.questionId]: answer,
+            },
+          };
+        }),
+
+      setAnswers: (answers) =>
+        set(() => {
+          const answersMap: Record<number, AnswerResponse> = {};
+
+          // Converte o array de respostas para um objeto com questionId como chave
+          answers.forEach((answer) => {
+            answersMap[answer.questionId] = answer;
+          });
+
+          return {
+            answers: answersMap,
+          };
+        }),
 
       resetIfNewDay: () => {
         const { date } = get();
         if (!isToday(date)) {
           set({
-            date: new Date().toISOString(),
+            date: getCurrentDateTimeInBrazil().toISOString(),
             answers: {},
             idDailyQuestion: null,
           });

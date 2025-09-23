@@ -79,14 +79,14 @@ export function useQuestions() {
       optionIndex: number;
     }) => {
       // Garantir que temos o ID da questão diária
-      if (!idDailyQuestion && data) {
+      if (data) {
         setDailyQuestion(data.id);
       }
 
       const response = await httpClient.put<AnswerResponse>(
         "/questions/answer",
         {
-          idDailyQuestion: idDailyQuestion || data?.id,
+          idDailyQuestion: data?.id ?? idDailyQuestion,
           idQuestion: questionId,
           userAnswer: optionText,
         } as AnswerRequest,

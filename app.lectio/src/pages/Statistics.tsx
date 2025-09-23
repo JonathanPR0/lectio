@@ -28,7 +28,8 @@ import {
 } from "@/components/ui/card";
 import { useProfile } from "@/hooks/useProfile";
 import { useQuestions } from "@/hooks/useQuestions";
-import { useAnswersStore, type AnswerResponse } from "@/store/answersStore";
+import { useAnswersStore } from "@/store/answersStore";
+import { getCurrentDateTimeInBrazil } from "@/utils/getCurrentDateTimeInBrazil";
 import { Progress } from "@radix-ui/react-progress";
 
 const MAX_SHIELDS = 2;
@@ -37,7 +38,7 @@ export function Statistics() {
   const navigate = useNavigate();
   const { profile, isLoading, purchaseShield, isPurchasing } = useProfile();
   const { getProgress } = useQuestions();
-  const { addAnswer, setDailyQuestion } = useAnswersStore();
+  const { setDailyQuestion, setAnswers } = useAnswersStore();
 
   const questionProgress = getProgress();
 
@@ -68,26 +69,34 @@ export function Statistics() {
   useEffect(() => {
     document.title = "Estatísticas | Lectio";
     if (profile?.lastAnswers) {
+      const lastAnswers =
+        profile.lastAnswers
+          .filter(
+            (lastAnswer) =>
+              lastAnswer.answeredAt.split("T")[0] ===
+              getCurrentDateTimeInBrazil().toISOString().split("T")[0],
+          )
+          .sort((a, b) => a.questionId - b.questionId) ?? [];
+
       // Set the daily question ID from the first answer
-      const firstAnswer = profile.lastAnswers[0];
+      const firstAnswer = lastAnswers[0];
       if (firstAnswer) {
-        setDailyQuestion(firstAnswer.dailyQuestionsId);
+        setDailyQuestion(
+          firstAnswer.dailyQuestionsId ?? profile.lastActivityDate,
+        );
       }
 
-      // Convert and store each answer
-      profile.lastAnswers.forEach((lastAnswer) => {
-        const answerResponse: AnswerResponse = {
+      setAnswers(
+        lastAnswers.map((lastAnswer) => ({
           questionId: lastAnswer.questionId,
           answerIndex: lastAnswer.userAnswerIndex, // Using userAnswerIndex as answerIndex
           correctOptionIndex: lastAnswer.answerIndex, // Using answerIndex as correctOptionIndex
           answer: lastAnswer.answer,
           isCorrect: lastAnswer.answerIndex === lastAnswer.userAnswerIndex, // Compare indexes to determine if correct
-        };
-
-        addAnswer(answerResponse);
-      });
+        })),
+      );
     }
-  }, [profile?.lastAnswers, addAnswer, setDailyQuestion]);
+  }, [profile, setAnswers, setDailyQuestion]);
 
   if (isLoading) {
     return (

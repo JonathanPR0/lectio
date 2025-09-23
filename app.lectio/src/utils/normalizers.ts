@@ -1,5 +1,4 @@
-import { addHours, format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { addHours, parseISO } from "date-fns";
 
 export function normalizeDate(date?: Date): string {
   if (!date) return "";
@@ -23,13 +22,6 @@ export function normalizeLocalDate(date: Date | string): Date {
     0,
     0,
     0,
-  );
-
-  console.log("Data original:", dateObj.toString());
-  console.log("Data ajustada:", adjustedDate.toString());
-  console.log(
-    "Normalized Local Date",
-    format(localMidnight, "yyyy-MM-dd", { locale: ptBR }),
   );
 
   return localMidnight;
