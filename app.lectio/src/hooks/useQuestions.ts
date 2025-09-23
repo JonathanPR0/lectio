@@ -57,7 +57,7 @@ export function useQuestions() {
       });
       return response.data;
     },
-    staleTime: 1000 * 60 * 60, // 1 hora
+    staleTime: 1000 * 60 * 5, // 1 hora
     // onSuccess is supported as an option in recent versions of React Query
     onSuccess: (data: QuestionsResponse) => {
       // Salvar o ID da questão diária se ainda não estiver salvo
