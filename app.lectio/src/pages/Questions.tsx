@@ -70,7 +70,10 @@ export function Questions() {
   const totalPossiblePoints = getTotalPossiblePoints();
 
   // Normalizar a data para o horário local (meia-noite)
-  const localDate = useMemo(() => normalizeLocalDate(data.date), [data.date]);
+  const localDate = useMemo(
+    () => normalizeLocalDate(data?.date ?? new Date()),
+    [data],
+  );
 
   // Verificar se todas as questões foram respondidas
   const allQuestionsAnswered =

@@ -1,8 +1,9 @@
 // src/hooks/useQuestions.ts
 import { httpClient } from "@/services/httpClient";
 import { useAnswersStore, type AnswerResponse } from "@/store/answersStore";
-import { normalizeLocalDate } from "@/utils/normalizers";
+import { getCurrentDateTimeInBrazil } from "@/utils/getCurrentDateTimeInBrazil";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { useEffect } from "react";
 
 export interface Question {
@@ -51,7 +52,7 @@ export function useQuestions() {
     queryFn: async () => {
       const response = await httpClient.get<QuestionsResponse>("/questions", {
         params: {
-          date: normalizeLocalDate(new Date()).toISOString().split("T")[0],
+          date: format(getCurrentDateTimeInBrazil(), "yyyy-MM-dd"),
         },
       });
       return response.data;
