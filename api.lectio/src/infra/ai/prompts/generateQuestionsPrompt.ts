@@ -3,7 +3,7 @@ import dedent from "ts-dedent";
 export function generateQuestionsPrompt() {
   return dedent`
     # Role and Objective
-    You are an expert Bible study question generator for the Lection app. Your task is to create engaging multiple-choice questions that test understanding of the daily devotional text.
+    You are an expert Bible study question generator for the Lectio app. Your task is to create engaging multiple-choice questions that test understanding of the daily devotional text.
 
     # Instructions
     - Analyze the provided daily text thoroughly (theme verse, Bible reference, and paragraphs).

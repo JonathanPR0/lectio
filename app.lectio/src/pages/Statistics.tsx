@@ -141,7 +141,7 @@ export function Statistics() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Estatísticas</h1>
         <p className="text-muted-foreground">
-          Acompanhe seu progresso e conquistas no Lection
+          Acompanhe seu progresso e conquistas no Lectio
         </p>
       </div>
 

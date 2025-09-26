@@ -38,7 +38,7 @@ O **Lectio** é uma aplicação web gamificada que transforma o estudo bíblico 
 - **Zustand** para estado local
 - **React Router** para navegação
 
-### Backend (`api.lection/`)
+### Backend (`api.lectio/`)
 
 - **Serverless Framework** com AWS Lambda
 - **Node.js 22** com TypeScript
@@ -107,14 +107,14 @@ O **Lectio** é uma aplicação web gamificada que transforma o estudo bíblico 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/lection.git
-cd lection
+git clone https://github.com/seu-usuario/lectio.git
+cd lectio
 ```
 
 ### 2. Configure o Backend
 
 ```bash
-cd api.lection
+cd api.lectio
 npm install
 
 # Configure as variáveis de ambiente
@@ -136,7 +136,7 @@ cp .env.example .env
 ### 4. Deploy da Infraestrutura
 
 ```bash
-cd ../api.lection
+cd ../api.lectio
 npx serverless deploy --stage dev
 ```
 
@@ -190,7 +190,7 @@ npx serverless deploy # Deploy para AWS
 ## 📁 Estrutura do Projeto
 
 ```
-lection/
+lectio/
 ├── app.lectio/                 # Frontend React
 │   ├── src/
 │   │   ├── components/         # Componentes reutilizáveis
@@ -199,7 +199,7 @@ lection/
 │   │   ├── services/          # Serviços de API
 │   │   └── contexts/          # Contextos React
 │   └── public/                # Arquivos estáticos
-├── api.lection/               # Backend Serverless
+├── api.lectio/               # Backend Serverless
 │   ├── src/
 │   │   ├── application/       # Casos de uso e controllers
 │   │   ├── entities/          # Entidades de domínio
@@ -234,4 +234,3 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
   <p>Feito para incentivar o estudo bíblico diário</p>
   <p>⭐ Se este projeto te ajudou, considere dar uma estrela!</p>
 </div>
-EOF
