@@ -2,8 +2,8 @@ import { ResourceNotFound } from "@application/errors/application/ResourceNotFou
 import { StreakService } from "@application/services/StreakService";
 import { ProfileRepository } from "@infra/database/dynamo/repositories/ProfileRepository";
 import { Injectable } from "@kernel/decorators/Injectable";
+import { differenceInHours } from "date-fns";
 import { Profile } from "src/entities/Profile";
-import { calculateHoursDifference } from "utils/calculate";
 
 @Injectable()
 export class GetProfileByAccountIdUseCase {
@@ -18,7 +18,7 @@ export class GetProfileByAccountIdUseCase {
     }
 
     // Calcula a diferença de dias desde a última atividade
-    const hoursDifference = calculateHoursDifference(new Date(), profile.lastActivityDate);
+    const hoursDifference = differenceInHours(new Date(), profile.lastActivityDate);
 
     if (hoursDifference >= 24 && profile.streakCount > 0) {
       profile = StreakService.updateStreak(profile);

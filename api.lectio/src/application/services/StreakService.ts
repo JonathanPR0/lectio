@@ -1,9 +1,9 @@
+import { differenceInDays } from "date-fns";
 import { Profile } from "src/entities/Profile";
-import { calculateDaysDifference } from "utils/calculate";
 
 export class StreakService {
   static updateStreak(profile: Profile): Profile {
-    const daysDifference = calculateDaysDifference(new Date(), profile.lastActivityDate);
+    const daysDifference = differenceInDays(new Date(), profile.lastActivityDate);
 
     if (daysDifference >= 1 && profile.streakCount > 0) {
       if (daysDifference <= profile.shields) {

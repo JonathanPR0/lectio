@@ -132,9 +132,9 @@ export function Questions() {
   if (error) {
     return (
       <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background p-6">
-        <Card className="w-full max-w-md border-red-500/20">
+        <Card className="w-full max-w-md border-destructive/20">
           <CardHeader>
-            <CardTitle className="text-red-500">
+            <CardTitle className="text-destructive">
               Erro ao carregar questões
             </CardTitle>
           </CardHeader>
@@ -380,9 +380,9 @@ export function Questions() {
                       isSelected && !currentQuestionAnswered
                         ? "border-primary bg-primary/10"
                         : isCorrectAnswer
-                          ? "border-green-500 bg-green-500/10"
+                          ? "border-success bg-success/10"
                           : wasUserAnswer && !isCorrectAnswer
-                            ? "border-red-500 bg-red-500/10"
+                            ? "border-destructive bg-destructive/10"
                             : "border-muted bg-card hover:border-primary/30"
                     } text-left`}
                     disabled={currentQuestionAnswered || reviewMode}
@@ -393,9 +393,9 @@ export function Questions() {
                           isSelected && !currentQuestionAnswered
                             ? "bg-primary text-primary-foreground"
                             : isCorrectAnswer
-                              ? "bg-green-500 text-white"
+                              ? "bg-success text-white"
                               : wasUserAnswer && !isCorrectAnswer
-                                ? "bg-red-500 text-white"
+                                ? "bg-destructive text-white"
                                 : "bg-muted text-muted-foreground"
                         }`}
                       >
@@ -420,15 +420,15 @@ export function Questions() {
                 <div
                   className={`p-4 rounded-lg ${
                     currentAnswer.isCorrect
-                      ? "bg-green-500/10"
-                      : "bg-red-500/10"
+                      ? "bg-success/10"
+                      : "bg-destructive/10"
                   }`}
                 >
                   <h3
                     className={`font-medium mb-2 ${
                       currentAnswer.isCorrect
-                        ? "text-green-500"
-                        : "text-red-500"
+                        ? "text-success"
+                        : "text-destructive"
                     }`}
                   >
                     {currentAnswer.isCorrect

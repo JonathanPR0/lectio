@@ -10,3 +10,9 @@ export function normalizeDate(date?: Date): string {
   const brazilDate = new Date(date.getTime() + brazilOffset);
   return brazilDate.toISOString().split("T")[0]; // Retorna YYYY-MM-DD no horário brasileiro
 }
+export function normalizeDatetime(date?: Date): Date | undefined {
+  if (!date) return undefined;
+  const brazilOffset = -3 * 60 * 60 * 1000; // UTC-3 em milissegundos
+  const brazilDate = new Date(date.getTime() + brazilOffset);
+  return brazilDate; // Retorna YYYY-MM-DD no horário brasileiro
+}

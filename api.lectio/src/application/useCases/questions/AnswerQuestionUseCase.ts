@@ -3,7 +3,7 @@ import { StreakService } from "@application/services/StreakService";
 import { DailyQuestionsRepository } from "@infra/database/dynamo/repositories/DailyQuestionsRepository";
 import { ProfileRepository } from "@infra/database/dynamo/repositories/ProfileRepository";
 import { Injectable } from "@kernel/decorators/Injectable";
-import { normalizeDate } from "utils/normalizers";
+import { normalizeDate, normalizeDatetime } from "utils/normalizers";
 
 @Injectable()
 export class AnswerQuestionUseCase {
@@ -66,7 +66,7 @@ export class AnswerQuestionUseCase {
       const answerToSave = {
         dailyQuestionsId: idDailyQuestion,
         questionId: idQuestion,
-        answeredAt: new Date(),
+        answeredAt: normalizeDatetime(new Date()) ?? new Date(),
         userAnswerIndex,
         answer: question?.answer ?? "",
         answerIndex: question?.correctOptionIndex ?? -1,
