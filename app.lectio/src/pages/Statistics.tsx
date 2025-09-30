@@ -16,6 +16,7 @@ import {
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { InstallAppButton } from "@/components/custom/InstallAppButton";
 import { MotionSpinner } from "@/components/custom/MotionSpinner";
 import { Button } from "@/components/ui/Button";
 import {
@@ -192,12 +193,39 @@ export function Statistics() {
               </div>
             </div>
 
-            <div className="text-sm text-muted-foreground flex items-center gap-2 justify-center">
-              <Calendar className="h-4 w-4" />
-              <span>
-                Último quiz realizado:{" "}
-                {formatLastActivity(profile.lastActivityDate)}
-              </span>
+            <div className="text-sm text-muted-foreground flex flex-col items-center gap-2 justify-center">
+              <div className="flex gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  Último quiz realizado:{" "}
+                  {formatLastActivity(profile.lastActivityDate)}
+                </span>
+              </div>
+              {/* Verifica se a última atividade foi entre 24 e 36 horas atrás */}
+              {(() => {
+                const lastActivityDate = new Date(profile.lastActivityDate);
+                const now = new Date();
+                const hoursDifference = Math.floor(
+                  (now.getTime() - lastActivityDate.getTime()) /
+                    (1000 * 60 * 60),
+                );
+
+                if (hoursDifference > 24 && hoursDifference < 36) {
+                  const hoursLeft = 36 - hoursDifference;
+                  return (
+                    <div className="text-xs text-destructive/70 flex items-center gap-2 mx-auto">
+                      <AlertCircle className="h-4 w-4 text-destructive/70" />
+                      <span>
+                        Você tem {hoursLeft} hora{hoursLeft > 1 ? "s" : ""} para
+                        completar o quiz antes de perder sua ofensiva ou gastar
+                        escudos.
+                      </span>
+                    </div>
+                  );
+                }
+
+                return null;
+              })()}
             </div>
           </CardContent>
         </Card>
@@ -334,7 +362,7 @@ export function Statistics() {
               >
                 {isPurchasing ? (
                   <>
-                    <MotionSpinner />
+                    <MotionSpinner className="me-2" />
                     Comprando...
                   </>
                 ) : (
@@ -416,6 +444,7 @@ export function Statistics() {
           </CardContent>
         </Card>
       </motion.div>
+      <InstallAppButton />
     </div>
   );
 }

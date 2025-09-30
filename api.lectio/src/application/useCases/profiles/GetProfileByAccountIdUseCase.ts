@@ -20,7 +20,8 @@ export class GetProfileByAccountIdUseCase {
     // Calcula a diferença de dias desde a última atividade
     const hoursDifference = differenceInHours(new Date(), profile.lastActivityDate);
 
-    if (hoursDifference >= 24 && profile.streakCount > 0) {
+    // Se a diferença for maior ou igual a 1 dias e meio (36 horas), tenta resetar a streak
+    if (hoursDifference >= 36 && profile.streakCount > 0) {
       profile = StreakService.updateStreak(profile);
       await this.profileRepository.save(profile);
     }

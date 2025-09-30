@@ -1,7 +1,7 @@
 import { ProfileRepository } from "@infra/database/dynamo/repositories/ProfileRepository";
 import { AuthGateway } from "@infra/gateways/AuthGateway";
 import { Injectable } from "@kernel/decorators/Injectable";
-import { calculateDaysDifference } from "utils/calculate";
+import { differenceInDays } from "date-fns";
 
 @Injectable()
 export class SignInUseCase {
@@ -22,7 +22,7 @@ export class SignInUseCase {
     if (points > 0) {
       const profile = await this.profileRepository.findByAccountId(internalId);
       const lastActivityDateWasToday = profile?.lastActivityDate
-        ? calculateDaysDifference(new Date(), profile.lastActivityDate) === 0
+        ? differenceInDays(new Date(), profile.lastActivityDate) === 0
         : false;
 
       if (profile && !lastActivityDateWasToday) {
