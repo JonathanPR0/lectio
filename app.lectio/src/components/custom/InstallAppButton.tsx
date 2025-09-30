@@ -18,82 +18,67 @@ import { motion } from "framer-motion";
 import { Download, Info, MoreVertical, Share } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
-}
-
 export function InstallAppButton() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstall, setShowInstall] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
-    // Verifica se o navegador é compatível com PWA
-    const isPWACompatible =
-      ("serviceWorker" in navigator && window.location.protocol === "https:") ||
-      window.location.hostname === "localhost";
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone;
 
-    // Exibe o botão se for desktop ou dispositivo móvel com navegador compatível
-    if (isPWACompatible) {
-      setShowInstallButton(true);
+    if (isStandalone) {
+      setShowInstall(false);
+      return;
+    } else {
+      setShowInstall(true);
     }
 
-    const handleBeforeInstallPrompt = (e: Event) => {
-      // Previne o comportamento padrão do navegador
+    const handler = (e: Event) => {
+      console.log("beforeinstallprompt event triggered");
       e.preventDefault();
-      // Armazena o evento para poder dispará-lo mais tarde
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Sempre mostra o botão quando o evento é disparado
-      setShowInstallButton(true);
+      setDeferredPrompt(e);
+      setShowInstall(true);
     };
 
-    // Adiciona listener para o evento beforeinstallprompt
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("beforeinstallprompt", handler);
 
-    // Verificamos quando o app é instalado
     window.addEventListener("appinstalled", () => {
-      setShowInstallButton(false);
+      console.log("App foi instalado.");
+      setShowInstall(false);
     });
 
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt,
-      );
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", () => {
+        setShowInstall(false);
+      });
     };
   }, []);
 
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      // Mostra o prompt de instalação se estiver disponível
-      deferredPrompt.prompt();
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
 
-      // Espera o usuário responder ao prompt
-      const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
 
-      // Se o usuário aceitar a instalação, esconde o botão
-      if (outcome === "accepted") {
-        setShowInstallButton(false);
-      }
-
-      // Limpa o prompt armazenado, só pode ser usado uma vez
+    if (outcome === "accepted") {
       setDeferredPrompt(null);
-    } else {
-      // Se não temos o prompt, mostramos instruções de como instalar manualmente
-      setShowInstructions(true);
+      setShowInstall(false);
     }
   };
 
-  // Detecta o sistema operacional para mostrar instruções específicas
+  // Show manual install instructions if we can't show the native prompt
+  const handleShowInstructions = () => {
+    setShowInstructions(true);
+  };
+
+  if (!showInstall) return null;
+
   const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isAndroid = /Android/i.test(navigator.userAgent);
-
-  if (!showInstallButton) {
-    return null;
-  }
 
   return (
     <>
@@ -108,19 +93,31 @@ export function InstallAppButton() {
               <Download className="h-5 w-5" />
               Instalar o Lectio
             </CardTitle>
-            <CardDescription className="sr-only">
-              Adicione o Lectio à sua tela inicial para acesso rápido
-            </CardDescription>
+            <CardDescription className="sr-only"></CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Instale o Lectio como um aplicativo para uma melhor experiência
+                Instale o Lectio como um aplicativo para uma experiência mais
+                fluida.
               </p>
-              <Button onClick={handleInstallClick} className="w-full">
-                Instalar aplicativo
-                <Download className="ml-2 h-4 w-4" />
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  onClick={handleInstall}
+                  className="w-full cursor-pointer"
+                >
+                  Instalar aplicativo
+                  <Download className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleShowInstructions}
+                  className="w-full"
+                >
+                  Ver instruções manuais
+                  <Info className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
