@@ -175,8 +175,8 @@ export function SignUp() {
                   {...form.register("password", {
                     required: "Senha é obrigatória",
                     minLength: {
-                      value: 6,
-                      message: "A senha deve ter pelo menos 6 caracteres",
+                      value: 8,
+                      message: "A senha deve ter pelo menos 8 caracteres",
                     },
                   })}
                 />
