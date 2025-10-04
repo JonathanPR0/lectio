@@ -66,7 +66,6 @@ export function Statistics() {
     () => (profile ? profile.shields >= MAX_SHIELDS : false),
     [profile],
   );
-
   useEffect(() => {
     document.title = "Estatísticas | Lectio";
     if (profile?.lastAnswers) {

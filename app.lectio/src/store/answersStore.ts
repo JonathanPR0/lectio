@@ -29,15 +29,15 @@ interface AnswersState {
 
 // Verificar se a data armazenada é de hoje
 const isToday = (dateString: string): boolean => {
-  const today = getCurrentDateTimeInBrazil().toISOString().split("T")[0];
-  const storedDate = new Date(dateString).toISOString().split("T")[0];
+  const today = getCurrentDateTimeInBrazil().toString().split("T")[0];
+  const storedDate = new Date(dateString).toString().split("T")[0];
   return today === storedDate;
 };
 
 export const useAnswersStore = create<AnswersState>()(
   persist(
     (set, get) => ({
-      date: getCurrentDateTimeInBrazil().toISOString(),
+      date: getCurrentDateTimeInBrazil().toString(),
       answers: {},
       idDailyQuestion: null,
 
@@ -49,7 +49,7 @@ export const useAnswersStore = create<AnswersState>()(
           if (!isToday(state.date)) {
             // Se não for hoje, reseta completamente
             return {
-              date: getCurrentDateTimeInBrazil().toISOString(),
+              date: getCurrentDateTimeInBrazil().toString(),
               answers: { [answer.questionId]: answer }, // Começa novo objeto apenas com a resposta atual
               idDailyQuestion: state.idDailyQuestion, // Mantém o ID da questão diária
             };
@@ -83,7 +83,7 @@ export const useAnswersStore = create<AnswersState>()(
         const { date } = get();
         if (!isToday(date)) {
           set({
-            date: getCurrentDateTimeInBrazil().toISOString(),
+            date: getCurrentDateTimeInBrazil().toString(),
             answers: {},
             idDailyQuestion: null,
           });
