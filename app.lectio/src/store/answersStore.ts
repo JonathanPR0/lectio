@@ -1,7 +1,7 @@
 // src/store/answersStore.ts
 import { storageKeys } from "@/config/storageKeys";
 import { getCurrentDateTimeInBrazil } from "@/utils/getCurrentDateTimeInBrazil";
-import { formatDate } from "date-fns";
+import { subHours } from "date-fns";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -30,15 +30,19 @@ interface AnswersState {
 
 // Verificar se a data armazenada é de hoje
 const isToday = (dateString: string): boolean => {
-  const today = formatDate(getCurrentDateTimeInBrazil(), "yyyy-MM-dd");
-  const storedDate = formatDate(new Date(dateString), "yyyy-MM-dd");
+  const today = subHours(getCurrentDateTimeInBrazil(), 3)
+    .toISOString()
+    .split("T")[0];
+  const storedDate = subHours(new Date(dateString), 3)
+    .toISOString()
+    .split("T")[0];
   return today === storedDate;
 };
 
 export const useAnswersStore = create<AnswersState>()(
   persist(
     (set, get) => ({
-      date: formatDate(getCurrentDateTimeInBrazil(), "yyyy-MM-dd"),
+      date: getCurrentDateTimeInBrazil().toISOString(),
       answers: {},
       idDailyQuestion: null,
 
@@ -50,7 +54,7 @@ export const useAnswersStore = create<AnswersState>()(
           if (!isToday(state.date)) {
             // Se não for hoje, reseta completamente
             return {
-              date: formatDate(getCurrentDateTimeInBrazil(), "yyyy-MM-dd"),
+              date: getCurrentDateTimeInBrazil().toISOString(),
               answers: { [answer.questionId]: answer }, // Começa novo objeto apenas com a resposta atual
               idDailyQuestion: state.idDailyQuestion, // Mantém o ID da questão diária
             };
@@ -84,7 +88,7 @@ export const useAnswersStore = create<AnswersState>()(
         const { date } = get();
         if (!isToday(date)) {
           set({
-            date: formatDate(getCurrentDateTimeInBrazil(), "yyyy-MM-dd"),
+            date: getCurrentDateTimeInBrazil().toISOString(),
             answers: {},
             idDailyQuestion: null,
           });
