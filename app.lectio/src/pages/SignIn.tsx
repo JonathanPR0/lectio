@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { useAuth } from "@/hooks/useAuth";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -27,6 +28,13 @@ interface IFormData {
 export function SignIn() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  // Meta tags para SEO e compartilhamento
+  useMetaTags({
+    title: "Entrar - Lectio",
+    description: "Faça login na sua conta do Lectio e continue aprendendo",
+    ogImage: "/og-default.png",
+  });
 
   const form = useForm<IFormData>({
     defaultValues: {

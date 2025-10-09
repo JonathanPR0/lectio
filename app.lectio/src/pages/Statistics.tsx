@@ -27,6 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useProfile } from "@/hooks/useProfile";
 import { useQuestions } from "@/hooks/useQuestions";
 import { useAnswersStore } from "@/store/answersStore";
@@ -40,6 +41,13 @@ export function Statistics() {
   const { profile, isLoading, purchaseShield, isPurchasing } = useProfile();
   const { getProgress } = useQuestions();
   const { setDailyQuestion, setAnswers } = useAnswersStore();
+
+  // Meta tags para SEO e compartilhamento
+  useMetaTags({
+    title: "Estatísticas - Lectio",
+    description: `Veja seu progresso no Lectio`,
+    ogImage: "/og-default.png",
+  });
 
   const questionProgress = getProgress();
 

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
+import { useMetaTags } from "@/hooks/useMetaTags";
 import { useQuestions } from "@/hooks/useQuestions";
 import { formatDate } from "@/lib/utils";
 import { normalizeLocalDate } from "@/utils/normalizers";
@@ -48,6 +49,14 @@ export function Questions() {
     null,
   );
   const [reviewMode, setReviewMode] = useState(showResultsParam);
+
+  // Meta tags para SEO e compartilhamento
+  useMetaTags({
+    title: "Quiz Diário - Lectio",
+    description:
+      "Teste seus conhecimentos bíblicos com o quiz diário do Lectio",
+    ogImage: "/og-default.png",
+  });
 
   // Questão atual
   const currentQuestion = data?.questions?.[currentQuestionIndex];

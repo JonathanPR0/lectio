@@ -3,12 +3,14 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+// import reactOgImage from "vite-plugin-react-og-image";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+
     VitePWA({
       registerType: "autoUpdate",
       devOptions: {
@@ -39,13 +41,6 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
-    open: true,
-    https: {
-      key: "./key.pem",
-      cert: "./cert.pem",
-    },
-  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
