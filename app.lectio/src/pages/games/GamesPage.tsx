@@ -1,3 +1,4 @@
+import { MotionSpinner } from "@/components/custom/MotionSpinner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/Input";
@@ -87,10 +88,10 @@ export function GamesPage() {
 
         {/* Lista de jogos */}
         {isLoadingGames ? (
-          <div className="text-center py-12">
-            <div className="flex flex-col items-center gap-3">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              <p className="text-muted-foreground">Carregando jogos...</p>
+          <div className="h-[30dvh] flex items-center justify-center bg-background">
+            <div className="flex gap-3 text-center items-center">
+              <MotionSpinner />
+              <p>Carregando jogos...</p>
             </div>
           </div>
         ) : filteredGames?.length === 0 ? (

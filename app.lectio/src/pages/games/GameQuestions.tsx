@@ -376,14 +376,14 @@ export function GameQuestions() {
                         "w-full h-auto min-h-[3rem] py-3 px-4 text-left justify-start whitespace-normal",
                         isSelected &&
                           !isAnswered &&
-                          "border-primary bg-primary/5",
+                          "border-primary bg-primary/10",
                         isAnswered &&
                           isCorrectOption &&
-                          "border-green-500 bg-green-50 dark:bg-green-950",
+                          "border-success bg-success/10",
                         isAnswered &&
                           wasSelected &&
                           !isCorrectOption &&
-                          "border-red-500 bg-red-50 dark:bg-red-950",
+                          "border-destructive bg-destructive/10",
                       )}
                       onClick={() => {
                         if (!isAnswered) {
@@ -394,10 +394,10 @@ export function GameQuestions() {
                     >
                       <span className="flex-1">{option.text}</span>
                       {isAnswered && isCorrectOption && (
-                        <CheckCircle2 className="ml-2 h-5 w-5 text-green-600 flex-shrink-0" />
+                        <CheckCircle2 className="ml-2 h-5 w-5 text-success flex-shrink-0" />
                       )}
                       {isAnswered && wasSelected && !isCorrectOption && (
-                        <XCircle className="ml-2 h-5 w-5 text-red-600 flex-shrink-0" />
+                        <XCircle className="ml-2 h-5 w-5 text-destructive flex-shrink-0" />
                       )}
                     </Button>
                   );
@@ -423,11 +423,11 @@ export function GameQuestions() {
                           "border-primary bg-primary/5",
                         isAnswered &&
                           isCorrectOption &&
-                          "border-green-500 bg-green-50 dark:bg-green-950",
+                          "border-success bg-success/10",
                         isAnswered &&
                           wasSelected &&
                           !isCorrectOption &&
-                          "border-red-500 bg-red-50 dark:bg-red-950",
+                          "border-destructive bg-destructive/10",
                       )}
                       onClick={() => {
                         if (!isAnswered) {
@@ -440,10 +440,10 @@ export function GameQuestions() {
                         {value ? "Verdadeiro" : "Falso"}
                       </span>
                       {isAnswered && isCorrectOption && (
-                        <CheckCircle2 className="ml-2 h-5 w-5 text-green-600 flex-shrink-0" />
+                        <CheckCircle2 className="ml-2 h-5 w-5 text-success flex-shrink-0" />
                       )}
                       {isAnswered && wasSelected && !isCorrectOption && (
-                        <XCircle className="ml-2 h-5 w-5 text-red-600 flex-shrink-0" />
+                        <XCircle className="ml-2 h-5 w-5 text-destructive flex-shrink-0" />
                       )}
                     </Button>
                   );
@@ -464,15 +464,15 @@ export function GameQuestions() {
                   className={cn(
                     "rounded-lg p-4",
                     currentAnswer.isCorrect
-                      ? "bg-green-50 dark:bg-green-950"
-                      : "bg-red-50 dark:bg-red-950",
+                      ? "bg-success/10"
+                      : "bg-destructive/10",
                   )}
                 >
                   <div className="flex items-start gap-2">
                     {currentAnswer.isCorrect ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
                     ) : (
-                      <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                      <XCircle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
                     )}
                     <div>
                       <p className="font-semibold mb-1">
