@@ -290,16 +290,14 @@ export function GameQuestions() {
           </div>
 
           {/* Botão de reset */}
-          <Button
-            variant="ghost"
-            size="sm"
+          <p
             onClick={handleResetGameWithConfirmation}
-            className="text-muted-foreground hover:text-destructive px-0"
+            className="flex gap-2 items-center text-muted-foreground hover:text-destructive"
             title="Reiniciar jogo"
           >
-            <RotateCcw className="h-4 w-4 mr-2" />
+            <RotateCcw className="h-4 w-4 " />
             Reiniciar
-          </Button>
+          </p>
         </div>
 
         {reviewMode && (

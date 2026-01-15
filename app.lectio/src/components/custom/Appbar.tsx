@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { ThemeSwitcher } from "../ThemeSwitcher";
 import { Button } from "../ui/Button";
 
 export function Appbar() {
@@ -98,18 +99,21 @@ export function Appbar() {
         <div className="flex items-center gap-2 ml-auto md:ml-0">
           {/* Botão do menu hamburguer */}
           {signedIn && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="border"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <XIcon className="h-5 w-5" />
-              ) : (
-                <MenuIcon className="h-5 w-5" />
-              )}
-            </Button>
+            <>
+              <ThemeSwitcher />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="border"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? (
+                  <XIcon className="h-5 w-5" />
+                ) : (
+                  <MenuIcon className="h-5 w-5" />
+                )}
+              </Button>
+            </>
           )}
           {!signedIn && (
             <div className="flex gap-2">
@@ -150,7 +154,7 @@ export function Appbar() {
                         "justify-start",
                         isActive(item.path)
                           ? "bg-primary text-primary-foreground"
-                          : "bg-foreground/5",
+                          : "bg-foreground/5 hover:text-foreground",
                       )}
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -227,7 +231,7 @@ export function Appbar() {
                         "justify-start",
                         isActive(item.path)
                           ? "bg-primary text-primary-foreground"
-                          : "bg-foreground/5",
+                          : "bg-foreground/5 hover:text-foreground",
                       )}
                       onClick={() => setMobileMenuOpen(false)}
                     >
