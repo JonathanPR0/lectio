@@ -9,25 +9,11 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface GameOption {
-  text: string;
-  isAnswer: boolean;
-}
-
-interface GameQuestion {
-  id: string;
-  difficulty: "EASY" | "MEDIUM" | "HARD";
-  text: string;
-  options?: GameOption[];
-  isTrue?: boolean;
-  answer: string;
-}
-
 interface Game {
   id: string;
   name: string;
   type: "options" | "boolean";
-  questions: GameQuestion[];
+  questionsQtde: number;
 }
 
 export function GamesPage() {
@@ -136,7 +122,7 @@ export function GamesPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{game?.questions?.length} questões</span>
+                      <span>{game?.questionsQtde} questões</span>
                       <span className="text-primary font-medium">Jogar →</span>
                     </div>
                   </CardContent>
