@@ -1,6 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 
 import { ForgotPassword } from "@/pages/ForgotPassword";
+import { GameQuestions } from "@/pages/games/GameQuestions";
+import { GamesPage } from "@/pages/games/GamesPage";
 import NotFound from "@/pages/NotFound";
 import { Questions } from "@/pages/Questions";
 import { SignIn } from "../pages/SignIn";
@@ -12,6 +14,8 @@ export function Router() {
   return (
     <Routes>
       <Route path="/questions" element={<Questions />} />
+      <Route path="/games" element={<GamesPage />} />
+      <Route path="/games/:gameId" element={<GameQuestions />} />
       <Route element={<AuthGuard isPrivate />}>
         <Route path="/" element={<Statistics />} />
       </Route>

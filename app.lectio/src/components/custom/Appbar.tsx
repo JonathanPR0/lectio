@@ -1,35 +1,6 @@
-// import { LogOutIcon } from "lucide-react";
-
-// import { useAuth } from "@/hooks/useAuth";
-// import { ThemeSwitcher } from "./ThemeSwitcher";
-// import { Button } from "./ui/Button";
-// import { Tooltip } from "./ui/Tooltip";
-
-// export function Appbar() {
-//   const { signedIn, signOut } = useAuth();
-
-//   return (
-//     <div className="right-4 top-4 flex items-center gap-4 max-w-3xl mx-auto p-2">
-//       <ThemeSwitcher />
-
-//       {signedIn && (
-//         <Tooltip content="Sair">
-//           <Button
-//             variant="secondary"
-//             size="icon"
-//             className="rounded-full"
-//             onClick={signOut}
-//           >
-//             <LogOutIcon className="w4 h-4" />
-//           </Button>
-//         </Tooltip>
-//       )}
-//     </div>
-//   );
-// }
-
 import {
   BookOpenIcon,
+  Gamepad2,
   LogOutIcon,
   MenuIcon,
   TrendingUp,
@@ -39,16 +10,20 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import logoImage from "@/assets/logo.svg";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Separator } from "@radix-ui/react-separator";
 import { AnimatePresence, motion } from "framer-motion";
-import { ThemeSwitcher } from "../ThemeSwitcher";
 import { Button } from "../ui/Button";
-import { Tooltip } from "../ui/Tooltip";
 
 export function Appbar() {
   const { signedIn, signOut } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Array de itens de navegação
@@ -65,6 +40,12 @@ export function Appbar() {
       icon: <BookOpenIcon className="w-4 h-4" />,
       showWhen: "signed-in",
     },
+    {
+      name: "Jogos",
+      path: "/games",
+      icon: <Gamepad2 className="w-4 h-4" />,
+      showWhen: "signed-in",
+    },
   ];
 
   // Filtra os itens de navegação com base no estado de autenticação
@@ -77,10 +58,10 @@ export function Appbar() {
 
   // Função para verificar se uma rota está ativa
   const isActive = (path: string) => window.location.pathname === path;
-
+  const isMobile = window.innerWidth < 768;
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-5xl items-center mx-auto p-4">
+      <div className="container flex h-14 max-w-5xl items-center mx-auto p-4 justify-between">
         <div className="mr-4 flex">
           <Link to="/" className="flex items-center gap-2">
             <img
@@ -95,69 +76,31 @@ export function Appbar() {
           </Link>
         </div>
 
-        {/* Navegação para desktop */}
-        {/* <nav className="hidden md:flex items-center space-x-2 flex-1">
-          {filteredNavItems.map((item) => (
-            <Tooltip key={item.path} content={item.name}>
+        {/* Navegação desktop */}
+        <nav className="hidden items-center gap-2 ml-auto mr-4">
+          {signedIn &&
+            filteredNavItems.map((item) => (
               <Button
+                key={item.path}
                 variant={isActive(item.path) ? "default" : "ghost"}
                 size="sm"
                 asChild
-                className={cn(
-                  "transition-all",
-                  isActive(item.path)
-                    ? "bg-primary text-primary-foreground"
-                    : "",
-                )}
               >
                 <Link to={item.path} className="flex items-center gap-2">
                   {item.icon}
                   <span>{item.name}</span>
                 </Link>
               </Button>
-            </Tooltip>
-          ))}
-        </nav> */}
+            ))}
+        </nav>
 
         {/* Itens do lado direito */}
-        <div className="flex items-center gap-2 ml-auto">
-          {signedIn && (
-            <>
-              <Separator
-                orientation="vertical"
-                className="h-6 mx-1 hidden sm:block"
-              />
-
-              <Tooltip content="Sair">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full hidden sm:flex"
-                  onClick={signOut}
-                >
-                  <LogOutIcon className="w-4 h-4" />
-                </Button>
-              </Tooltip>
-            </>
-          )}
-
-          {!signedIn && (
-            <div className="hidden md:flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/sign-in">Entrar</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link to="/sign-up">Criar conta</Link>
-              </Button>
-            </div>
-          )}
-          <ThemeSwitcher />
-
-          {/* Botão do menu mobile */}
+        <div className="flex items-center gap-2 ml-auto md:ml-0">
+          {/* Botão do menu hamburguer */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="border"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -169,17 +112,17 @@ export function Appbar() {
         </div>
       </div>
 
-      {/* Menu mobile */}
+      {/* Menu mobile  */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="md:hidden absolute top-full left-0 w-full bg-background border-b shadow-md origin-top"
+            className="md:hidden absolute top-full left-0 w-full bg-background border-b shadow-md origin-top z-40"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <div className=" px-4 py-3 flex flex-col gap-2 border-t">
+            <div className="max-w-md px-4 py-3 flex flex-col gap-2 border-t">
               <nav className="flex flex-col gap-2">
                 {signedIn &&
                   filteredNavItems.map((item) => (
@@ -241,6 +184,80 @@ export function Appbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Menu desktop (Sheet) */}
+      <div className="hidden md:block">
+        <Sheet
+          open={mobileMenuOpen && !isMobile}
+          onOpenChange={(bool) => !isMobile && setMobileMenuOpen(bool)}
+        >
+          <SheetContent side="right" className="w-80 hidden md:flex">
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+            </SheetHeader>
+
+            <div className="flex-1 flex flex-col gap-4 mt-4">
+              <nav className="flex flex-col gap-2">
+                {signedIn &&
+                  filteredNavItems.map((item) => (
+                    <Button
+                      key={item.path}
+                      variant={isActive(item.path) ? "default" : "ghost"}
+                      asChild
+                      className={cn(
+                        "justify-start",
+                        isActive(item.path)
+                          ? "bg-primary text-primary-foreground"
+                          : "",
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link to={item.path} className="flex items-center gap-3">
+                        {item.icon}
+                        <span>{item.name}</span>
+                      </Link>
+                    </Button>
+                  ))}
+              </nav>
+
+              {!signedIn && (
+                <div className="flex flex-col gap-2 mt-auto">
+                  <Button variant="outline" asChild>
+                    <Link
+                      to="/sign-in"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Entrar
+                    </Link>
+                  </Button>
+                  <Button asChild>
+                    <Link
+                      to="/sign-up"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Criar conta
+                    </Link>
+                  </Button>
+                </div>
+              )}
+
+              {signedIn && (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    signOut();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="mt-auto"
+                >
+                  <LogOutIcon className="w-4 h-4 mr-2" />
+                  Sair
+                </Button>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 }

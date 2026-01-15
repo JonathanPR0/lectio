@@ -452,7 +452,7 @@ export function Questions() {
             )}
           </CardContent>
 
-          <CardFooter className="flex justify-between gap-2">
+          <CardFooter className="flex justify-between gap-2 p-4 md:p-6 pt-0 md:pt-0">
             {reviewMode ? (
               <>
                 {currentQuestionIndex !== 0 && (

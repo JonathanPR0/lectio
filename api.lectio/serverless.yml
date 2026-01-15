@@ -54,6 +54,7 @@ functions:
   - ${file(sls/functions/profiles.yml)}
   - ${file(sls/functions/questions.yml)}
   - ${file(sls/functions/dailyTexts.yml)}
+  - ${file(sls/functions/games.yml)}
   
 resources:
   - ${file(./sls/resources/APIGWCustomDomain.yml)}

@@ -1,0 +1,26 @@
+getGames:
+  handler: src/main/functions/games/getGames.handler
+  events:
+    - httpApi:
+        method: GET
+        path: /games
+        authorizer:
+          name: CognitoAuthorizer
+
+getGamesById:
+  handler: src/main/functions/games/getGameById.handler
+  events:
+    - httpApi:
+        method: GET
+        path: /games/{gameId}
+        authorizer:
+          name: CognitoAuthorizer
+
+createGame:
+  handler: src/main/functions/games/createGame.handler
+  events:
+    - httpApi:
+        method: POST
+        path: /games
+        authorizer:
+          name: CognitoAuthorizer
