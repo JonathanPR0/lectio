@@ -97,18 +97,34 @@ export function Appbar() {
         {/* Itens do lado direito */}
         <div className="flex items-center gap-2 ml-auto md:ml-0">
           {/* Botão do menu hamburguer */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="border"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <XIcon className="h-5 w-5" />
-            ) : (
-              <MenuIcon className="h-5 w-5" />
-            )}
-          </Button>
+          {signedIn && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="border"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <XIcon className="h-5 w-5" />
+              ) : (
+                <MenuIcon className="h-5 w-5" />
+              )}
+            </Button>
+          )}
+          {!signedIn && (
+            <div className="flex gap-2">
+              <Button variant="outline" asChild>
+                <Link to="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                  Entrar
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link to="/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                  Criar conta
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -191,12 +207,15 @@ export function Appbar() {
           open={mobileMenuOpen && !isMobile}
           onOpenChange={(bool) => !isMobile && setMobileMenuOpen(bool)}
         >
-          <SheetContent side="right" className="w-80 hidden md:flex">
+          <SheetContent
+            side="right"
+            className="w-80 hidden md:flex flex-col p-4"
+          >
             <SheetHeader>
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
 
-            <div className="flex-1 flex flex-col gap-4 mt-4">
+            <div className="flex-1 flex flex-col gap-4 mt-4 w-full">
               <nav className="flex flex-col gap-2">
                 {signedIn &&
                   filteredNavItems.map((item) => (
@@ -208,7 +227,7 @@ export function Appbar() {
                         "justify-start",
                         isActive(item.path)
                           ? "bg-primary text-primary-foreground"
-                          : "",
+                          : "bg-foreground/5",
                       )}
                       onClick={() => setMobileMenuOpen(false)}
                     >

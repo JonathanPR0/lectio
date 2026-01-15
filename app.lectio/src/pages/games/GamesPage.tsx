@@ -41,10 +41,7 @@ export function GamesPage() {
     ogImage: "/og-default.png",
   });
 
-  const {
-    data: games,
-    // isLoading: isLoadingGames,
-  } = useQuery<Game[]>({
+  const { data: games, isLoading: isLoadingGames } = useQuery<Game[]>({
     queryKey: ["games"],
     queryFn: async () => {
       const response = await httpClient
@@ -103,7 +100,14 @@ export function GamesPage() {
         </div>
 
         {/* Lista de jogos */}
-        {filteredGames?.length === 0 ? (
+        {isLoadingGames ? (
+          <div className="text-center py-12">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="text-muted-foreground">Carregando jogos...</p>
+            </div>
+          </div>
+        ) : filteredGames?.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               Nenhum jogo encontrado com "{searchTerm}"

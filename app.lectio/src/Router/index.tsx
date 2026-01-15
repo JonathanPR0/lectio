@@ -14,10 +14,10 @@ export function Router() {
   return (
     <Routes>
       <Route path="/questions" element={<Questions />} />
-      <Route path="/games" element={<GamesPage />} />
-      <Route path="/games/:gameId" element={<GameQuestions />} />
       <Route element={<AuthGuard isPrivate />}>
         <Route path="/" element={<Statistics />} />
+        <Route path="/games" element={<GamesPage />} />
+        <Route path="/games/:gameId" element={<GameQuestions />} />
       </Route>
 
       <Route element={<AuthGuard isPrivate={false} />}>
