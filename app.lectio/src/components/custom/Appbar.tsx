@@ -108,9 +108,9 @@ export function Appbar() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? (
-                  <XIcon className="h-5 w-5" />
+                  <XIcon className="h-5 w-5 text-foreground" />
                 ) : (
-                  <MenuIcon className="h-5 w-5" />
+                  <MenuIcon className="h-5 w-5 text-foreground" />
                 )}
               </Button>
             </>

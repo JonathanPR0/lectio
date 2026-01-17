@@ -1,3 +1,4 @@
+import AlertPopUp from "@/components/custom/AlertPopUp";
 import { Button } from "@/components/ui/Button";
 import {
   Card,
@@ -199,18 +200,6 @@ export function GameQuestions() {
     setSelectedBoolean(null);
   };
 
-  // Função para reiniciar o jogo com confirmação
-  const handleResetGameWithConfirmation = () => {
-    if (
-      window.confirm(
-        "Tem certeza que deseja reiniciar o jogo? Todo o progresso será perdido.",
-      )
-    ) {
-      handleResetGame();
-      toast.success("Jogo reiniciado!");
-    }
-  };
-
   // Tela de conclusão quando todas as questões forem respondidas
   if (allQuestionsAnswered && !reviewMode) {
     return (
@@ -283,21 +272,27 @@ export function GameQuestions() {
       <div className="w-full max-w-2xl">
         <div className="flex justify-between items-center mb-4">
           <div
-            className="flex gap-2 items-center text-sm cursor-pointer hover:text-primary transition-colors"
+            className="flex gap-2 items-center text-sm cursor-pointer hover:text-foreground/90 transition-colors"
             onClick={() => navigate("/games")}
           >
             <ChevronLeft className="h-4 w-4" /> Voltar para jogos
           </div>
 
           {/* Botão de reset */}
-          <p
-            onClick={handleResetGameWithConfirmation}
-            className="flex gap-2 items-center text-muted-foreground hover:text-destructive"
-            title="Reiniciar jogo"
+          <AlertPopUp
+            title="Deseja resetar mesmo?"
+            description="Todo o progresso será perdido e as perguntas re-embaralhadas."
+            action={handleResetGame}
           >
-            <RotateCcw className="h-4 w-4 " />
-            Reiniciar
-          </p>
+            <p
+              // onClick={handleResetGameWithConfirmation}
+              className="flex gap-2 items-center text-muted-foreground hover:text-muted-foreground/80"
+              title="Resetar jogo"
+            >
+              <RotateCcw className="h-4 w-4 " />
+              Resetar
+            </p>
+          </AlertPopUp>
         </div>
 
         {reviewMode && (

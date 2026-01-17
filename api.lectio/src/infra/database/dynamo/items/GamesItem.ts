@@ -1,6 +1,5 @@
 import KSUID from "ksuid";
 import { Games } from "src/entities/Games";
-import { normalizeUTCDate } from "utils/normalizers";
 
 export class GamesItem {
   static readonly entityType = "Games";
@@ -28,14 +27,14 @@ export class GamesItem {
     };
   }
 
-  static fromEntity(Games: Games) {
+  static fromEntity(game: Games) {
     return new GamesItem({
-      ...Games,
-      questions: Games.questions.map((q) => ({
+      ...game,
+      questions: game.questions.map((q) => ({
         id: q.id ?? KSUID.randomSync().string,
         ...q,
       })),
-      createdAt: normalizeUTCDate(Games.createdAt).toISOString(),
+      createdAt: game.createdAt.toISOString(),
     });
   }
 

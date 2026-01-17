@@ -178,7 +178,10 @@ export const useGameAnswersStore = create<GameAnswersState>()(
         set((state) => {
           const game = state.games[gameId];
           if (!game) return state;
-
+          const totalQuestions = game.questionOrder.length;
+          const questionOrder = shuffleArray(
+            Array.from({ length: totalQuestions }, (_, i) => i),
+          );
           // Mantém a ordem das perguntas, mas reseta o progresso
           return {
             games: {
@@ -187,6 +190,7 @@ export const useGameAnswersStore = create<GameAnswersState>()(
                 ...game,
                 answers: {},
                 currentIndex: 0,
+                questionOrder,
                 completedAt: undefined,
               },
             },

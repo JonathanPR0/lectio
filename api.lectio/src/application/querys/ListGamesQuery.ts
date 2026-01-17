@@ -20,6 +20,7 @@ export class ListGamesQuery {
       ExpressionAttributeValues: {
         ":GSI1PK": GamesItem.getGSI1PK(),
       },
+      ScanIndexForward: false,
     });
 
     const { Items = [] } = await dynamoClient.send(command);
@@ -30,6 +31,7 @@ export class ListGamesQuery {
       name: item.name,
       type: item.type,
       questionsQtde: item.questions.length,
+      createdAt: item.createdAt ? new Date(item.createdAt) : undefined,
     }));
 
     return {
@@ -53,6 +55,7 @@ export namespace ListGamesQuery {
       id: string;
       name: string;
       type: Games.Type;
+      createdAt?: Date;
     }[];
   };
 }

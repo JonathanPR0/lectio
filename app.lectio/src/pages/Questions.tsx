@@ -130,7 +130,7 @@ export function Questions() {
   if (isLoading) {
     return (
       <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background">
-        <div className="text-center">
+        <div className="flex gap-3 text-center items-center">
           <MotionSpinner />
           <p className="text-foreground">Carregando questões...</p>
         </div>

@@ -130,9 +130,9 @@ export function SignIn() {
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex gap-3 text-center items-center">
                     <MotionSpinner />
-                    Entrando...
+                    <p>Entrando...</p>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">

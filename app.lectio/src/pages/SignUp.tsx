@@ -221,9 +221,9 @@ export function SignUp() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
+                <div className="flex gap-3 text-center items-center">
                   <MotionSpinner />
-                  Criando conta...
+                  <p>Criando conta...</p>
                 </div>
               ) : (
                 "Criar Conta"
