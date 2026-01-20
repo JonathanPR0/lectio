@@ -34,7 +34,7 @@ interface GameQuestion {
   id: string;
   text: string;
   options?: GameOption[];
-  isTrue?: boolean;
+  isAnswer: boolean;
   answer: string;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
   points?: number;
@@ -80,7 +80,6 @@ export function GameQuestions() {
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(
     null,
   );
-  const [selectedBoolean, setSelectedBoolean] = useState<boolean | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
 
   useMetaTags({
@@ -137,36 +136,21 @@ export function GameQuestions() {
 
     let isCorrect = false;
 
-    if (game.type === "options") {
-      if (selectedOptionIndex === null) {
-        toast.error("Selecione uma opção");
-        return;
-      }
-      const selectedOption = currentQuestion.options?.[selectedOptionIndex];
-      isCorrect = selectedOption?.isAnswer || false;
-
-      addGameAnswer(gameId, {
-        questionId: currentQuestion.id,
-        answerIndex: selectedOptionIndex,
-        isCorrect,
-      });
-    } else if (game.type === "boolean") {
-      if (selectedBoolean === null) {
-        toast.error("Selecione uma opção");
-        return;
-      }
-      isCorrect = selectedBoolean === currentQuestion.isTrue;
-
-      addGameAnswer(gameId, {
-        questionId: currentQuestion.id,
-        answerBoolean: selectedBoolean,
-        isCorrect,
-      });
+    if (selectedOptionIndex === null) {
+      toast.error("Selecione uma opção");
+      return;
     }
+    const selectedOption = currentQuestion.options?.[selectedOptionIndex];
+    isCorrect = selectedOption?.isAnswer || false;
+
+    addGameAnswer(gameId, {
+      questionId: currentQuestion.id,
+      answerIndex: selectedOptionIndex,
+      isCorrect,
+    });
 
     // Reset selection state after answering
     setSelectedOptionIndex(null);
-    setSelectedBoolean(null);
   };
 
   // Função para ir para próxima questão
@@ -174,7 +158,6 @@ export function GameQuestions() {
     if (currentIndex < game.questions.length - 1) {
       goToNextQuestion(gameId);
       setSelectedOptionIndex(null);
-      setSelectedBoolean(null);
     }
   };
 
@@ -183,7 +166,6 @@ export function GameQuestions() {
     if (currentIndex > 0) {
       goToPreviousQuestion(gameId);
       setSelectedOptionIndex(null);
-      setSelectedBoolean(null);
     }
   };
 
@@ -197,7 +179,6 @@ export function GameQuestions() {
     resetGame(gameId);
     setReviewMode(false);
     setSelectedOptionIndex(null);
-    setSelectedBoolean(null);
   };
 
   // Tela de conclusão quando todas as questões forem respondidas
@@ -400,23 +381,24 @@ export function GameQuestions() {
               </div>
             ) : (
               <div className="flex flex-col space-y-2 md:space-y-3">
-                {[true, false].map((value) => {
-                  const isSelected = selectedBoolean === value;
+                {currentQuestion?.options?.map((option, index) => {
+                  const isSelected = selectedOptionIndex === index;
                   const isAnswered = currentQuestionAnswered;
-                  const isCorrectOption = value === currentQuestion?.isTrue;
+                  const isCorrectOption = option?.isAnswer;
                   const wasSelected =
-                    isAnswered && currentAnswer?.answerBoolean === value;
+                    isAnswered && currentAnswer?.answerIndex === index;
 
                   return (
                     <Button
-                      key={value.toString()}
+                      key={option.toString()}
                       variant="outline"
                       className={cn(
-                        "w-full h-auto min-h-[3rem] py-3 px-4 text-left justify-start",
+                        "w-full h-auto min-h-[3rem] py-3 px-4 text-left justify-start whitespace-normal",
                         isSelected &&
                           !isAnswered &&
-                          "border-primary bg-primary/5",
+                          "border-primary bg-primary/10",
                         isAnswered &&
+                          wasSelected &&
                           isCorrectOption &&
                           "border-success bg-success/10",
                         isAnswered &&
@@ -426,15 +408,13 @@ export function GameQuestions() {
                       )}
                       onClick={() => {
                         if (!isAnswered) {
-                          setSelectedBoolean(value);
+                          setSelectedOptionIndex(index);
                         }
                       }}
                       disabled={isAnswered}
                     >
-                      <span className="flex-1">
-                        {value ? "Verdadeiro" : "Falso"}
-                      </span>
-                      {isAnswered && isCorrectOption && (
+                      <span className="flex-1">{option.text}</span>
+                      {isAnswered && wasSelected && isCorrectOption && (
                         <CheckCircle2 className="ml-2 h-5 w-5 text-success flex-shrink-0" />
                       )}
                       {isAnswered && wasSelected && !isCorrectOption && (
@@ -509,10 +489,7 @@ export function GameQuestions() {
             ) : (
               <Button
                 onClick={handleAnswerQuestion}
-                disabled={
-                  (game.type === "options" && selectedOptionIndex === null) ||
-                  (game.type === "boolean" && selectedBoolean === null)
-                }
+                disabled={selectedOptionIndex === null}
                 className="flex-1"
               >
                 Responder
