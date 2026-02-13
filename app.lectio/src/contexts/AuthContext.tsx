@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const originalRequest = error.config;
         const refreshToken = localStorage.getItem(storageKeys.refreshToken);
 
-        if (originalRequest.url === "/refresh-token") {
+        if (originalRequest.url === "/auth/refresh-token") {
           setSignedIn(false);
           localStorage.clear();
           return Promise.reject(error);
