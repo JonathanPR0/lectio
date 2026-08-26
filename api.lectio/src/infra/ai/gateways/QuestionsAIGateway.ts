@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
+import { Injectable } from "@kernel/decorators/Injectable";
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-
-import { Injectable } from "@kernel/decorators/Injectable";
 import { ChatCompletionContentPart } from "openai/resources/index";
 import { DailyQuestions } from "src/entities/DailyQuestions";
 import z from "zod";
@@ -19,58 +18,103 @@ const questionsSchema = z.object({
       options: z.array(z.string()),
       correctOptionIndex: z.number().min(0),
       answer: z.string(),
-    })
+    }),
   ),
 });
 
 @Injectable()
 export class QuestionsAIGateway {
-  constructor() {}
-
   private readonly client = new OpenAI();
-  private readonly model = "gpt-4.1-mini";
+  private readonly model = "gpt-5.6-luna";
 
+  /**
+   * FLUXO PRINCIPAL: Orquestra a criação, verificação e formatação das perguntas.
+   */
   async processQuestionsAI({
     themeVerse,
     bibleVersicle,
     paragraphs,
   }: QuestionsAIGateway.ProcessQuestionsAIParams): Promise<QuestionsAIGateway.ProcessQuestionsAI> {
-    // Passo 1: Gerar as perguntas iniciais
+    // Passo 1: Geração bruta das perguntas
     const initialQuestions = await this.callAI({
       systemPrompt: generateQuestionsPrompt(),
-      userMessageParts: `DailyText:
-        ThemeVerse: ${themeVerse}
-        BibleVersicle: ${bibleVersicle}
-        Paragraphs: ${paragraphs.join("\n\n")}`,
+      userMessageParts: `
+        <daily_text_context>
+          <theme_verse>${themeVerse}</theme_verse>
+          <bible_reference>${bibleVersicle}</bible_reference>
+          <explanation>
+            ${paragraphs.join("\n\n")}
+          </explanation>
+        </daily_text_context>
+      `,
     });
 
-    // Passo 2: Verificar e corrigir a terminologia
-    return this.verifyTerminology(initialQuestions);
+    // Passo 2: Auditoria de terminologia
+    const verifiedQuestions = await this.verifyTerminology(initialQuestions);
+
+    // Passo 3: Randomização das alternativas
+    return this.shuffleQuestionOptions(verifiedQuestions);
   }
 
+  /**
+   * CIRURGIA DE TERMINOLOGIA: Só envia para a IA as perguntas que falharam nas regras.
+   */
   private async verifyTerminology(
-    questions: QuestionsAIGateway.ProcessQuestionsAI
+    data: QuestionsAIGateway.ProcessQuestionsAI,
   ): Promise<QuestionsAIGateway.ProcessQuestionsAI> {
-    // Verificar se há termos não permitidos
-    const prohibitedTerms = this.checkForProhibitedTerms(questions);
+    const issues = this.getQuestionsWithProhibitedTerms(data);
 
-    if (prohibitedTerms.length === 0) {
-      return questions;
+    // Se nenhuma pergunta tiver termos proibidos, retorna os dados originais imediatamente
+    if (issues.length === 0) {
+      return data;
     }
 
-    // Corrigir a terminologia
-    return this.callAI({
+    console.log(`[Auditoria] Corrigindo terminologia em ${issues.length} pergunta(s)...`);
+
+    const flawedQuestions = {
+      questions: issues.map((issue) => issue.question),
+    };
+
+    const issuesDescriptions = issues
+      .map((i) => `Pergunta ID ${i.question.id}: Termos encontrados [${i.foundTerms.join(", ")}]`)
+      .join("\n");
+
+    const correctedData = await this.callAI({
       systemPrompt: verifyTerminologyPrompt(),
-      userMessageParts: `Review and correct these Bible study questions for Jehovah's Witnesses. 
-      Replace any inappropriate terminology while maintaining the meaning and structure:
-      
-      ${JSON.stringify(questions, null, 2)}
-      
-      Terminology issues found: ${prohibitedTerms.join(", ")}`,
+      userMessageParts: `
+        <instruction>
+          Review and correct ONLY these specific Bible study questions.
+          Replace the inappropriate terminology while maintaining the exact meaning, difficulty, and structure.
+        </instruction>
+
+        <flawed_questions>
+          ${JSON.stringify(flawedQuestions, null, 2)}
+        </flawed_questions>
+
+        <issues_found>
+          ${issuesDescriptions}
+        </issues_found>
+      `,
     });
+
+    // Mescla as perguntas corrigidas de volta na posição original do array
+    const finalQuestions = [...data.questions];
+    correctedData.questions.forEach((correctedQuestion, indexNaRespostaDaIA) => {
+      const originalIndex = issues[indexNaRespostaDaIA]?.originalIndex;
+      if (originalIndex !== undefined) {
+        finalQuestions[originalIndex] = correctedQuestion;
+      }
+    });
+
+    return { questions: finalQuestions };
   }
 
-  private checkForProhibitedTerms(questions: QuestionsAIGateway.ProcessQuestionsAI): string[] {
+  /**
+   * VARREDURA LOCAL: Lê as perguntas geradas e acusa quais têm palavras proibidas.
+   */
+  private getQuestionsWithProhibitedTerms(
+    data: QuestionsAIGateway.ProcessQuestionsAI,
+  ): Array<{ originalIndex: number; question: any; foundTerms: string[] }> {
     const prohibitedTerms = [
       "culto",
       "cultos",
@@ -100,76 +144,114 @@ export class QuestionsAIGateway {
       "santos",
       "evangelismo",
       "evangelizar",
+      "sacramento",
+      "sacramentos",
     ];
 
-    const foundTerms: string[] = [];
+    const issues: Array<{ originalIndex: number; question: any; foundTerms: string[] }> = [];
 
-    // Verificar em todas as perguntas e opções
-    questions.questions.forEach((question) => {
-      // Verificar no texto da pergunta
+    data.questions.forEach((question, index) => {
+      const foundTerms = new Set<string>();
+      const contentToScan = [question.text, question.answer, ...question.options].map((text) =>
+        text.toLowerCase(),
+      );
+
       prohibitedTerms.forEach((term) => {
-        if (
-          question.text.toLowerCase().includes(term.toLowerCase()) &&
-          !foundTerms.includes(term)
-        ) {
-          foundTerms.push(term);
+        if (contentToScan.some((text) => text.includes(term.toLowerCase()))) {
+          foundTerms.add(term);
         }
       });
 
-      // Verificar nas opções
-      question.options.forEach((option) => {
-        prohibitedTerms.forEach((term) => {
-          if (option.toLowerCase().includes(term.toLowerCase()) && !foundTerms.includes(term)) {
-            foundTerms.push(term);
-          }
+      if (foundTerms.size > 0) {
+        issues.push({
+          originalIndex: index,
+          question,
+          foundTerms: Array.from(foundTerms),
         });
-      });
+      }
     });
 
-    return foundTerms;
+    return issues;
   }
 
+  /**
+   * RANDOMIZAÇÃO: Embaralha as alternativas no backend usando Fisher-Yates.
+   */
+  private shuffleQuestionOptions(
+    data: QuestionsAIGateway.ProcessQuestionsAI,
+  ): QuestionsAIGateway.ProcessQuestionsAI {
+    const shuffledQuestions = data.questions.map((question) => {
+      const originalCorrectAnswerText = question.options[question.correctOptionIndex];
+      const optionsWithMeta = question.options.map((optionText, index) => ({
+        text: optionText,
+        isCorrect: index === question.correctOptionIndex,
+      }));
+
+      // Algoritmo Fisher-Yates
+      for (let i = optionsWithMeta.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [optionsWithMeta[i], optionsWithMeta[j]] = [optionsWithMeta[j], optionsWithMeta[i]];
+      }
+
+      const newCorrectIndex = optionsWithMeta.findIndex((item) => item.isCorrect);
+
+      return {
+        ...question,
+        options: optionsWithMeta.map((item) => item.text),
+        correctOptionIndex: newCorrectIndex !== -1 ? newCorrectIndex : 0,
+        answer: question.answer || originalCorrectAnswerText,
+      };
+    });
+
+    return { questions: shuffledQuestions };
+  }
+
+  /**
+   * EXECUTOR DA API: Chama a OpenAI e tenta recuperar automaticamente falhas de JSON.
+   */
   private async callAI({
     systemPrompt,
     userMessageParts,
+    maxRetries = 1,
   }: QuestionsAIGateway.CallAIParams): Promise<QuestionsAIGateway.ProcessQuestionsAI> {
-    const response = await this.client.chat.completions.create({
-      model: this.model,
-      temperature: 0.3, // Temperatura baixa para seguir instruções mais rigorosamente
-      response_format: zodResponseFormat(questionsSchema, "dailyTextQuestions"),
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userMessageParts,
-        },
-      ],
-    });
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await this.client.chat.completions.create({
+          model: this.model,
+          response_format: zodResponseFormat(questionsSchema, "dailyTextQuestions"),
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessageParts },
+          ],
+        });
 
-    const json = response.choices[0].message.content;
+        const json = response.choices[0]?.message?.content;
+        if (!json) throw new Error("A IA retornou um conteúdo vazio.");
 
-    if (!json) {
-      console.error("OpenAI response:", JSON.stringify(response, null, 2));
-      throw new Error(`Failed processing daily text questions`);
+        const { success, data, error } = questionsSchema.safeParse(JSON.parse(json));
+        if (!success) throw new Error(`Erro de Zod Validation: ${JSON.stringify(error.issues)}`);
+
+        return data;
+      } catch (error: any) {
+        console.warn(`[API Attempt ${attempt + 1}] Falha: ${error.message}`);
+
+        if (attempt === maxRetries) {
+          console.error("[API Failed] Tentativas esgotadas.");
+          throw error;
+        }
+
+        if (error?.status === 429) {
+          console.warn("[Rate Limit 429] Aguardando 5 segundos antes de tentar novamente...");
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        }
+      }
     }
 
-    const { success, data, error } = questionsSchema.safeParse(JSON.parse(json));
-
-    if (!success) {
-      console.error("Zod error:", JSON.stringify(error.issues));
-      console.error("OpenAI response:", JSON.stringify(response, null, 2));
-      throw new Error(`Failed processing daily text questions`);
-    }
-
-    return data;
+    throw new Error("Erro inesperado na fila de IA.");
   }
 }
 
 export namespace QuestionsAIGateway {
-  // Tipos permanecem iguais...
   export type ProcessQuestionsAI = {
     questions: {
       id: number;
@@ -191,5 +273,6 @@ export namespace QuestionsAIGateway {
   export type CallAIParams = {
     systemPrompt: string;
     userMessageParts: string | ChatCompletionContentPart[];
+    maxRetries?: number;
   };
 }

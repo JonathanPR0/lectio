@@ -1,4 +1,5 @@
 import { MotionSpinner } from "@/components/custom/MotionSpinner";
+import { ReportQuestionDialog } from "@/components/custom/ReportQuestionDialog";
 import { Button } from "@/components/ui/Button";
 import {
   Card,
@@ -520,6 +521,13 @@ export function Questions() {
               </>
             )}
           </CardFooter>
+
+          <div className="flex justify-center border-t border-border/60 px-4 py-3 md:px-6">
+            <ReportQuestionDialog
+              idDailyQuestion={data.id}
+              idQuestion={currentQuestion.id}
+            />
+          </div>
         </Card>
       </motion.div>
     </div>

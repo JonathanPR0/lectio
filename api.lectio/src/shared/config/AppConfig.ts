@@ -5,6 +5,7 @@ import { env } from "./env";
 export class AppConfig {
   readonly auth: AppConfig.Auth;
   readonly db: AppConfig.Database;
+  readonly emails: AppConfig.Emails;
   // readonly storage: AppConfig.Storage;
   // readonly cdns: AppConfig.CDNs;
   readonly queues: AppConfig.Queues;
@@ -36,6 +37,11 @@ export class AppConfig {
       dailyQuestionsQueueUrl: env.DAILY_QUESTIONS_QUEUE_URL,
       dailyTextsQueueUrl: env.DAILY_TEXTS_QUEUE_URL,
     };
+    this.emails = {
+      resend: {
+        apiKey: env.RESEND_API_KEY,
+      },
+    };
   }
 }
 
@@ -65,5 +71,10 @@ export namespace AppConfig {
   export type Queues = {
     dailyQuestionsQueueUrl: string;
     dailyTextsQueueUrl: string;
+  };
+  export type Emails = {
+    resend: {
+      apiKey?: string;
+    };
   };
 }

@@ -18,6 +18,10 @@ export const schema = z.object({
   // QUEUES
   DAILY_QUESTIONS_QUEUE_URL: z.string().min(1),
   DAILY_TEXTS_QUEUE_URL: z.string().min(1),
+
+  // EXTERNAL SERVICES
+  OPENAI_API_KEY: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
 });
 
 function getEnv() {

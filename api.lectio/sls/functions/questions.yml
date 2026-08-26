@@ -29,3 +29,12 @@ createDailyQuestionsQueue:
     - sqs:
         arn: !GetAtt DailyQuestionsQueue.Arn
         batchSize: 2
+
+reportWrongQuestion:
+  handler: src/main/functions/questions/reportWrongQuestion.handler
+  memorySize: 512
+  timeout: 30
+  events:
+    - httpApi:
+        method: PUT
+        path: /questions/report
