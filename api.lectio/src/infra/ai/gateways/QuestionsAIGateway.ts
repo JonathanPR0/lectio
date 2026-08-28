@@ -12,6 +12,9 @@ const questionsSchema = z.object({
   questions: z.array(
     z.object({
       id: z.number().min(0),
+      thoughtProcess: z
+        .string()
+        .describe("Explique o raciocínio para criar a pergunta e os distratores."),
       text: z.string(),
       difficulty: z.nativeEnum(DailyQuestions.Difficulty),
       points: z.number(),
@@ -25,7 +28,7 @@ const questionsSchema = z.object({
 @Injectable()
 export class QuestionsAIGateway {
   private readonly client = new OpenAI();
-  private readonly model = "gpt-5.6-luna";
+  private readonly model = "gpt-5.6-terra";
 
   /**
    * FLUXO PRINCIPAL: Orquestra a criação, verificação e formatação das perguntas.
@@ -35,22 +38,24 @@ export class QuestionsAIGateway {
     bibleVersicle,
     paragraphs,
   }: QuestionsAIGateway.ProcessQuestionsAIParams): Promise<QuestionsAIGateway.ProcessQuestionsAI> {
+    const dailyTextContext = `
+      <daily_text_context>
+        <theme_verse>${themeVerse}</theme_verse>
+        <bible_reference>${bibleVersicle}</bible_reference>
+        <explanation>
+          ${paragraphs.join("\n\n")}
+        </explanation>
+      </daily_text_context>
+    `;
+
     // Passo 1: Geração bruta das perguntas
     const initialQuestions = await this.callAI({
       systemPrompt: generateQuestionsPrompt(),
-      userMessageParts: `
-        <daily_text_context>
-          <theme_verse>${themeVerse}</theme_verse>
-          <bible_reference>${bibleVersicle}</bible_reference>
-          <explanation>
-            ${paragraphs.join("\n\n")}
-          </explanation>
-        </daily_text_context>
-      `,
+      userMessageParts: dailyTextContext,
     });
 
     // Passo 2: Auditoria de terminologia
-    const verifiedQuestions = await this.verifyTerminology(initialQuestions);
+    const verifiedQuestions = await this.verifyTerminology(initialQuestions, dailyTextContext);
 
     // Passo 3: Randomização das alternativas
     return this.shuffleQuestionOptions(verifiedQuestions);
@@ -61,16 +66,13 @@ export class QuestionsAIGateway {
    */
   private async verifyTerminology(
     data: QuestionsAIGateway.ProcessQuestionsAI,
+    dailyTextContext: string,
   ): Promise<QuestionsAIGateway.ProcessQuestionsAI> {
     const issues = this.getQuestionsWithProhibitedTerms(data);
 
-    // Se nenhuma pergunta tiver termos proibidos, retorna os dados originais imediatamente
     if (issues.length === 0) {
       return data;
     }
-
-    console.log(`[Auditoria] Corrigindo terminologia em ${issues.length} pergunta(s)...`);
-
     const flawedQuestions = {
       questions: issues.map((issue) => issue.question),
     };
@@ -82,8 +84,10 @@ export class QuestionsAIGateway {
     const correctedData = await this.callAI({
       systemPrompt: verifyTerminologyPrompt(),
       userMessageParts: `
+        ${dailyTextContext}
+
         <instruction>
-          Review and correct ONLY these specific Bible study questions.
+          Review and correct ONLY these specific Bible study questions based on the context above.
           Replace the inappropriate terminology while maintaining the exact meaning, difficulty, and structure.
         </instruction>
 
@@ -116,51 +120,52 @@ export class QuestionsAIGateway {
     data: QuestionsAIGateway.ProcessQuestionsAI,
   ): Array<{ originalIndex: number; question: any; foundTerms: string[] }> {
     const prohibitedTerms = [
-      "culto",
-      "cultos",
-      "templo",
-      "templos",
-      "igreja",
-      "igrejas",
-      "cerimônia",
-      "cerimônias",
-      "ritual",
-      "rituais",
-      "liturgia",
-      "litúrgica",
-      "altar",
-      "altares",
-      "oferenda",
-      "oferendas",
-      "dízimo",
-      "dízimos",
-      "pastor",
-      "pastores",
-      "padre",
-      "padres",
-      "missa",
-      "missas",
-      "santo",
-      "santos",
-      "evangelismo",
-      "evangelizar",
-      "sacramento",
-      "sacramentos",
+      "\\bcultos?\\b",
+      "\\btemplos?\\b",
+      "\\bigrejas?\\b",
+      "\\bcerimônias?\\b",
+      "\\brituais?\\b",
+      "\\britual\\b",
+      "\\blitúrgicas?\\b",
+      "\\baltares?\\b",
+      "\\baltar\\b",
+      "\\boferendas?\\b",
+      "\\bdízimos?\\b",
+      "\\bpastores?\\b",
+      "\\bpastor\\b",
+      "\\bpadres?\\b",
+      "\\bpadre\\b",
+      "\\bmissas?\\b",
+      "\\bmissa\\b",
+      "\\bevangelismo\\b",
+      "\\bevangelizar\\b",
+      "\\bsacramentos?\\b",
     ];
+
+    const santoRegex = /(?<!espírito\s)santos?\b/i;
 
     const issues: Array<{ originalIndex: number; question: any; foundTerms: string[] }> = [];
 
     data.questions.forEach((question, index) => {
       const foundTerms = new Set<string>();
-      const contentToScan = [question.text, question.answer, ...question.options].map((text) =>
-        text.toLowerCase(),
-      );
+      // Agrupa todo o conteúdo em uma string em minúsculas
+      const contentToScan = [question.text, question.answer, ...question.options]
+        .join(" ")
+        .toLowerCase();
 
+      // Testa os termos gerais
       prohibitedTerms.forEach((term) => {
-        if (contentToScan.some((text) => text.includes(term.toLowerCase()))) {
-          foundTerms.add(term);
+        const regex = new RegExp(term, "i");
+        if (regex.test(contentToScan)) {
+          // Limpa as tags do Regex para o log ficar bonito
+          foundTerms.add(term.replace(/\\b/g, "").replace("?", ""));
         }
       });
+
+      // Testa a regra específica do 'santo'
+      if (santoRegex.test(contentToScan)) {
+        foundTerms.add("santo");
+      }
 
       if (foundTerms.size > 0) {
         issues.push({
@@ -255,6 +260,7 @@ export namespace QuestionsAIGateway {
   export type ProcessQuestionsAI = {
     questions: {
       id: number;
+      thoughtProcess: string;
       text: string;
       difficulty: DailyQuestions.Difficulty;
       points: number;

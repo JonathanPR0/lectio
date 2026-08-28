@@ -15,7 +15,7 @@ export class SignUpUseCase {
     private readonly authGateway: AuthGateway,
     private readonly accountRepository: AccountRepository,
     private readonly profileRepository: ProfileRepository,
-    private readonly signUpUow: SignUpUnitOfWork
+    private readonly signUpUow: SignUpUnitOfWork,
   ) {}
   async execute({
     email,
@@ -42,7 +42,7 @@ export class SignUpUseCase {
     const profile = new Profile({
       username,
       accountId: account.id,
-      points: Math.min(points, 60),
+      points: Math.min(points, 30),
       shields: 0,
       streakCount: points > 0 ? 1 : 0,
       lastActivityDate: points > 0 ? new Date() : subDays(new Date(), 1),

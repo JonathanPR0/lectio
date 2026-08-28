@@ -151,9 +151,9 @@ npm run dev
 
 ### Sistema de Pontuação
 
-- **Questões Fáceis**: 10 pontos
-- **Questões Médias**: 20 pontos
-- **Questões Difíceis**: 30 pontos
+- **Questões Fáceis**: 5 pontos
+- **Questões Médias**: 10 pontos
+- **Questões Difíceis**: 15 pontos
 
 ### Sistema de Escudos
 

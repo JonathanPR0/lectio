@@ -7,7 +7,7 @@ import { differenceInDays } from "date-fns";
 export class SignInUseCase {
   constructor(
     private readonly authGateway: AuthGateway,
-    private readonly profileRepository: ProfileRepository
+    private readonly profileRepository: ProfileRepository,
   ) {}
   async execute({
     email,
@@ -26,7 +26,7 @@ export class SignInUseCase {
         : false;
 
       if (profile && !lastActivityDateWasToday) {
-        profile.points += Math.min(points, 60);
+        profile.points += Math.min(points, 30);
         profile.streakCount += 1;
         profile.lastActivityDate = new Date();
 

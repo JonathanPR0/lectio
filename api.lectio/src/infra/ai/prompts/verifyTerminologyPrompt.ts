@@ -11,10 +11,11 @@ export function verifyTerminologyPrompt() {
     - "pastor" / "padre" / "líder religioso" -> "ancião" / "superintendente"
     - "dízimo" / "oferenda" -> "contribuição voluntária" / "donativo"
     - "evangelismo" / "evangelizar" -> "serviço de campo" / "pregação" / "ministério"
-    - "ritual" / "cerimônia" / "liturgia" -> rephrase to avoid, use "adoração" or "ocasião"
+    - "ritual" / "cerimônia" / "liturgia" -> rephrase to avoid, use "adoração" ou "ocasião"
     - Always verify that God's name is rendered as "Jeová".
 
     # Instructions
+    - Read the provided daily text context to fully understand the subject.
     - Review all questions, options, and explanations provided in the input.
     - Correct only the terminology and grammatical flow affected by the replacement.
     - Do NOT alter the number of questions (3) or options (4 per question).
