@@ -24,3 +24,12 @@ createGame:
         path: /games
         authorizer:
           name: CognitoAuthorizer
+
+deleteGameById:
+  handler: src/main/functions/games/deleteGameById.handler
+  events:
+    - httpApi:
+        method: DELETE
+        path: /games/{gameId}
+        authorizer:
+          name: CognitoAuthorizer

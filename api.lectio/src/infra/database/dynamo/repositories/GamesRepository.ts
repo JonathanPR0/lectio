@@ -1,4 +1,5 @@
 import {
+  DeleteCommand,
   GetCommand,
   PutCommand,
   PutCommandInput,
@@ -76,6 +77,17 @@ export class GamesRepository {
     });
 
     await dynamoClient.send(command);
+  }
+  async delete(id: string): Promise<void> {
+    await dynamoClient.send(
+      new DeleteCommand({
+        TableName: this.config.db.dynamodb.mainTable,
+        Key: {
+          PK: GamesItem.getPK({ id }),
+          SK: GamesItem.getSK(),
+        },
+      }),
+    );
   }
   getPutCommandInput(questions: Games): PutCommandInput {
     const gamesItem = GamesItem.fromEntity(questions);
