@@ -122,6 +122,7 @@ export function GameQuestions() {
     return (
       <TimedGameSetup
         gameName={game.name}
+        gameType={game.type}
         initialTimeLimitSeconds={timePreferences?.timeLimitSeconds}
         initialAutoStart={timePreferences?.autoStartTimer}
         onStart={(durationSeconds, autoStartTimer) => {

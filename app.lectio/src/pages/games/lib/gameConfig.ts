@@ -61,3 +61,65 @@ export const gameTypeBadgeColors: Record<GameType, string> = {
   one_word: "border-chart-4/40 bg-chart-4/90 text-secondary-foreground",
   taboo: "border-chart-5/40 bg-chart-5/90 text-secondary-foreground",
 };
+
+export interface GameRuleInfo {
+  title: string;
+  badge: string;
+  summary: string;
+  rules: string[];
+}
+
+export const gameTypeRules: Record<
+  "charades" | "drawing" | "one_word" | "taboo",
+  GameRuleInfo
+> = {
+  charades: {
+    title: "Mímica",
+    badge: "Mímica",
+    summary:
+      "Faça gestos corporais e mímicas para sua equipe adivinhar a palavra secreta sem emitir nenhum som.",
+    rules: [
+      "É estritamente proibido falar, emitir sons ou mover os lábios (dublagem).",
+      "Não aponte diretamente para pessoas ou objetos presentes no ambiente.",
+      "Use apenas linguagem corporal, gestos manuais e expressões faciais.",
+    ],
+  },
+  drawing: {
+    title: "Desenho",
+    badge: "Desenho",
+    summary:
+      "Desenhe em um papel, tela ou lousa para sua equipe adivinhar a palavra secreta.",
+    rules: [
+      "É proibido falar, fazer barulhos ou gesticular durante o desenho.",
+      "Não escreva letras, números, símbolos ou caracteres alfabéticos.",
+      "Apenas ilustrações visuais e desenhos são válidos.",
+    ],
+  },
+  one_word: {
+    title: "Uma Palavra",
+    badge: "Uma Palavra",
+    summary:
+      "Dê exatamente uma única palavra como dica para sua equipe adivinhar a palavra secreta.",
+    rules: [
+      "Você só pode pronunciar UMA única palavra de pista por tentativa.",
+      "Não faça gestos, não use frases e não use derivações diretas da palavra secreta.",
+      "Sua equipe deve tentar acertar com base apenas nessa única palavra.",
+    ],
+  },
+  taboo: {
+    title: "Não Pode",
+    badge: "Não Pode",
+    summary:
+      "Descreva a palavra secreta para sua equipe adivinhar sem pronunciar nenhuma das palavras proibidas.",
+    rules: [
+      "Você NÃO pode dizer a palavra secreta nem qualquer uma das palavras proibidas listadas.",
+      "É proibido usar derivações, plurais, rimas ou traduções das palavras proibidas.",
+      "Use conceitos, analogias, contextos e sinônimos criativos para ajudar sua equipe a acertar.",
+    ],
+  },
+};
+
+export const getGameTypeRules = (type: GameType): GameRuleInfo | null => {
+  if (type === "options" || type === "boolean") return null;
+  return gameTypeRules[type] ?? null;
+};

@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import type { GameAnswer } from "@/store/gameAnswersStore";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Ban,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import type { GameQuestion, GameType } from "../lib/gameTypes";
 import { isTimedGameType } from "../lib/gameTypes";
+import { GameRulesHelp } from "./GameRulesHelp";
 import { QuestionTimer } from "./QuestionTimer";
 
 type GameQuestionCardProps = {
@@ -129,20 +131,35 @@ function PerformanceActions({
 >) {
   return (
     <div className="space-y-4">
+      {/* Palavra a adivinhar / Palavra secreta */}
+      {question.answer && (
+        <div className="rounded-xl border border-border/80 bg-muted/40 p-4 md:p-5 text-center">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {type === "taboo" ? "Palavra a adivinhar" : "Palavra Secreta"}
+          </p>
+          <p className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+            {question.answer}
+          </p>
+        </div>
+      )}
+
       {/* Palavras proibidas para taboo */}
       {type === "taboo" &&
         question.forbiddenWords &&
         question.forbiddenWords.length > 0 && (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
-            <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-destructive">
-              Palavras proibidas
-            </p>
+          <div className="rounded-xl border border-destructive/25 bg-destructive/5 p-4">
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <Ban className="h-4 w-4 text-destructive shrink-0" />
+              <p className="text-xs font-bold uppercase tracking-wide text-destructive">
+                Palavras proibidas (não pode falar!)
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2">
               {question.forbiddenWords.map((word) => (
                 <Badge
                   key={word}
                   variant="destructive"
-                  className="text-xs font-medium px-2.5 py-1"
+                  className="text-xs font-semibold px-2.5 py-1"
                 >
                   {word}
                 </Badge>
@@ -253,6 +270,9 @@ export function GameQuestionCard({
         </CardHeader>
 
         <CardContent className="p-5 md:p-7 space-y-5">
+          {/* Explicação de como funciona o modo de jogo */}
+          {!isChoice && <GameRulesHelp type={type} />}
+
           {/* Timer (apenas jogos temporizados) */}
           {showTimer && (
             <QuestionTimer

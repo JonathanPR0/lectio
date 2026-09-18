@@ -39,10 +39,11 @@ export function WheelColumn({
   // Keep displayedIndex in sync if external value changes while not scrolling
   useEffect(() => {
     const idx = values.indexOf(value);
-    if (idx !== -1 && !isUserScrollingRef.current) {
-      setDisplayedIndex(idx);
+    const targetIdx = idx !== -1 ? idx : 0;
+    if (!isUserScrollingRef.current) {
+      setDisplayedIndex(targetIdx);
       if (containerRef.current) {
-        const targetScrollTop = idx * ITEM_HEIGHT;
+        const targetScrollTop = targetIdx * ITEM_HEIGHT;
         if (Math.abs(containerRef.current.scrollTop - targetScrollTop) > 2) {
           containerRef.current.scrollTo({
             top: targetScrollTop,
@@ -262,6 +263,36 @@ export function TimeWheelPicker({
   minuteOptions = DEFAULT_MINUTES,
   secondOptions = DEFAULT_SECONDS,
 }: TimeWheelPickerProps) {
+  // Limite máximo: se minutos for 5, os segundos permitidos são apenas 0
+  const isMaxMinutes = minutes >= 5;
+  const effectiveSecondOptions = isMaxMinutes ? [0] : secondOptions;
+
+  // Garante que os segundos sejam zerados caso os minutos estejam em 5
+  useEffect(() => {
+    if (minutes >= 5 && seconds > 0) {
+      onSecondsChange(0);
+    }
+  }, [minutes, seconds, onSecondsChange]);
+
+  const handleMinutesChange = (newMinutes: number) => {
+    if (newMinutes >= 5) {
+      onMinutesChange(5);
+      if (seconds > 0) {
+        onSecondsChange(0);
+      }
+    } else {
+      onMinutesChange(newMinutes);
+    }
+  };
+
+  const handleSecondsChange = (newSeconds: number) => {
+    if (minutes >= 5) {
+      onSecondsChange(0);
+    } else {
+      onSecondsChange(newSeconds);
+    }
+  };
+
   return (
     <div className="relative w-full rounded-2xl border border-border/60 bg-muted/20 p-2 shadow-inner backdrop-blur-sm">
       {/* Active Row Highlight Capsule / Pill spanning across columns */}
@@ -280,7 +311,7 @@ export function TimeWheelPicker({
         <WheelColumn
           values={minuteOptions}
           value={minutes}
-          onChange={onMinutesChange}
+          onChange={handleMinutesChange}
           formatLabel={(m) => String(m)}
           unitLabel="min"
           ariaLabel="Selecionar minutos"
@@ -288,9 +319,9 @@ export function TimeWheelPicker({
 
         {/* Seconds Wheel */}
         <WheelColumn
-          values={secondOptions}
-          value={seconds}
-          onChange={onSecondsChange}
+          values={effectiveSecondOptions}
+          value={isMaxMinutes ? 0 : seconds}
+          onChange={handleSecondsChange}
           formatLabel={(s) => s.toString().padStart(2, "0")}
           unitLabel="seg"
           ariaLabel="Selecionar segundos"
@@ -299,7 +330,7 @@ export function TimeWheelPicker({
 
       {/* Visual drag hints */}
       <div className="mt-1 flex items-center justify-center gap-1 text-[11px] text-muted-foreground/60">
-        <span>Deslize verticalmente para ajustar</span>
+        <span>Deslize verticalmente para ajustar (máx. 5:00)</span>
       </div>
     </div>
   );

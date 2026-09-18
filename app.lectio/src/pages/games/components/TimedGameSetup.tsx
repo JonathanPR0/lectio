@@ -3,10 +3,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Clock, Play, Zap } from "lucide-react";
 import { useState } from "react";
+import type { GameType } from "../lib/gameTypes";
+import { GameRulesHelp } from "./GameRulesHelp";
 import { TimeWheelPicker } from "./TimeWheelPicker";
 
 type TimedGameSetupProps = {
   gameName: string;
+  gameType?: GameType;
   onStart: (durationSeconds: number, autoStart: boolean) => void;
   initialTimeLimitSeconds?: number;
   initialAutoStart?: boolean;
@@ -14,21 +17,28 @@ type TimedGameSetupProps = {
 
 export function TimedGameSetup({
   gameName,
+  gameType,
   onStart,
   initialTimeLimitSeconds,
   initialAutoStart = false,
 }: TimedGameSetupProps) {
-  const [minutes, setMinutes] = useState(
-    initialTimeLimitSeconds
-      ? Math.min(5, Math.floor(initialTimeLimitSeconds / 60))
-      : 1,
-  );
-  const [seconds, setSeconds] = useState(
-    initialTimeLimitSeconds ? initialTimeLimitSeconds % 60 : 30,
-  );
+  const initialMinutes = initialTimeLimitSeconds
+    ? Math.min(5, Math.floor(initialTimeLimitSeconds / 60))
+    : 1;
+  const initialSeconds = initialTimeLimitSeconds
+    ? initialMinutes >= 5
+      ? 0
+      : initialTimeLimitSeconds % 60
+    : 30;
+
+  const [minutes, setMinutes] = useState(initialMinutes);
+  const [seconds, setSeconds] = useState(initialSeconds);
   const [autoStart, setAutoStart] = useState(initialAutoStart);
 
-  const durationSeconds = minutes * 60 + seconds;
+  const durationSeconds = Math.min(
+    300,
+    minutes * 60 + (minutes >= 5 ? 0 : seconds),
+  );
   const canStart = durationSeconds > 0;
 
   const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -50,6 +60,9 @@ export function TimedGameSetup({
         </CardHeader>
 
         <CardContent className="space-y-6 p-6 md:p-8">
+          {/* Regras e explicação do tipo de jogo */}
+          {gameType && <GameRulesHelp type={gameType} defaultOpen={false} />}
+
           {/* Drum Picker iOS Style */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">

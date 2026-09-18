@@ -171,7 +171,7 @@ export function GamesPage() {
                 >
                   <Card
                     className={
-                      "cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 active:scale-[0.99]"
+                      "cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 active:scale-[0.99] "
                     }
                     onClick={() => handleGameClick(game)}
                     role="button"
@@ -184,8 +184,8 @@ export function GamesPage() {
                       }
                     }}
                   >
-                    <CardHeader className="pb-2 p-5">
-                      <div className="flex items-start justify-between gap-2">
+                    <CardHeader className="grid pb-2 p-5">
+                      <div className="grid grid-cols-[1fr_auto] items-center justify-between gap-2 p-0.5">
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                             <Icon
@@ -193,13 +193,13 @@ export function GamesPage() {
                               aria-hidden
                             />
                           </div>
-                          <p className="font-semibold text-foreground leading-tight truncate">
+                          <p className="font-semibold text-foreground truncate max-w-[calc(100%-3rem)]">
                             {game.name}
                           </p>
                         </div>
                         <Badge
                           variant="outline"
-                          className={`shrink-0 text-xs ${gameTypeBadgeColors[game.type]}`}
+                          className={`shrink-0 text-xs ${gameTypeBadgeColors[game.type]} w-fit`}
                         >
                           {gameTypeLabels[game.type]}
                         </Badge>
