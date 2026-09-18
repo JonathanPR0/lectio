@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { AlertCircle, Clock, Timer } from "lucide-react";
 import { useEffect } from "react";
 import { useQuestionTimer } from "../lib/useQuestionTimer";
-import { playTimerAlert } from "../lib/timerSound";
+import { playTimerAlert, unlockAudioContext } from "../lib/timerSound";
 
 const formatTime = (totalSeconds: number) => {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
@@ -121,7 +121,10 @@ export function QuestionTimer({
         <Button
           variant={timerState === "idle" ? "default" : "outline"}
           size="sm"
-          onClick={start}
+          onClick={() => {
+            unlockAudioContext();
+            start();
+          }}
           disabled={timerState !== "idle"}
           aria-label={buttonLabel}
         >

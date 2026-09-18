@@ -1,20 +1,74 @@
+// Singleton AudioContext para compatibilidade com iOS / Safari / PWA
+let sharedAudioContext: AudioContext | null = null;
+let isAudioUnlocked = false;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+
+  if (!sharedAudioContext) {
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+
+    if (AudioContextClass) {
+      sharedAudioContext = new AudioContextClass();
+    }
+  }
+
+  return sharedAudioContext;
+}
+
+// Desbloqueia o AudioContext no primeiro gesto do usuário (requisito obrigatório do iOS)
+export function unlockAudioContext() {
+  if (isAudioUnlocked) return;
+
+  const context = getAudioContext();
+  if (!context) return;
+
+  if (context.state === "suspended") {
+    context.resume();
+  }
+
+  // Toca um buffer silencioso de 1 amostra para liberar a reprodução assíncrona no WebKit/iOS
+  try {
+    const buffer = context.createBuffer(1, 1, 22050);
+    const source = context.createBufferSource();
+    source.buffer = buffer;
+    source.connect(context.destination);
+    source.start(0);
+    isAudioUnlocked = true;
+  } catch {
+    // Ignora se não for permitido ainda
+  }
+}
+
+// Registra listeners automáticos de primeiro toque/clique
+if (typeof window !== "undefined") {
+  const unlockEvents = ["touchstart", "touchend", "click", "keydown", "pointerdown"];
+  const handleUserInteraction = () => {
+    unlockAudioContext();
+    if (sharedAudioContext && sharedAudioContext.state === "running") {
+      unlockEvents.forEach((event) => {
+        window.removeEventListener(event, handleUserInteraction);
+      });
+    }
+  };
+
+  unlockEvents.forEach((event) => {
+    window.addEventListener(event, handleUserInteraction, { capture: true, passive: true });
+  });
+}
+
 export function playTimerAlert() {
-  const AudioContextClass =
-    window.AudioContext ||
-    (window as typeof window & { webkitAudioContext?: typeof AudioContext })
-      .webkitAudioContext;
+  const context = getAudioContext();
+  if (!context) return;
 
-  if (!AudioContextClass) return;
-
-  const context = new AudioContextClass();
-
-  // Resume context if suspended by browser autoplay policy
   if (context.state === "suspended") {
     context.resume();
   }
 
   // Padrão de alarme estilo despertador digital / timer de celular:
-  // 3 blocos de bips triplos rápidos e penetrantes ("BIP-BIP-BIP ... BIP-BIP-BIP ... BIP-BIP-BIP")
   const beepGroups = 10;
   const beepsPerGroup = 3;
   const beepDuration = 0.085; // Duração de cada bip
@@ -58,13 +112,7 @@ export function playTimerAlert() {
       osc2.stop(stopTime);
     }
   }
-
-  const totalDuration = beepGroups * groupInterval + 0.2;
-
-  // Fecha o AudioContext ao término do alarme
-  setTimeout(() => {
-    context.close().catch(() => {});
-  }, totalDuration * 1000);
 }
+
 
 
