@@ -6,6 +6,7 @@ export interface GameAnswer {
   questionId: string;
   answerIndex?: number; // Para opções
   answerBoolean?: boolean; // Para verdadeiro/falso
+  points?: number;
   isCorrect: boolean;
 }
 
@@ -14,21 +15,39 @@ interface GameProgress {
   answers: Record<string, GameAnswer>;
   questionOrder: number[]; // Ordem aleatória das perguntas
   currentIndex: number; // Índice atual na ordem
+  timeLimitSeconds?: number;
+  autoStartTimer?: boolean;
   completedAt?: string;
+}
+
+export interface GameTimePreferences {
+  timeLimitSeconds: number;
+  autoStartTimer: boolean;
 }
 
 interface GameAnswersState {
   games: Record<string, GameProgress>;
+  timePreferences: Record<string, GameTimePreferences>;
 
   // Ações
   initializeGame: (gameId: string, totalQuestions: number) => void;
+  setGameTimeLimit: (
+    gameId: string,
+    timeLimitSeconds: number,
+    autoStartTimer: boolean,
+  ) => void;
+  getGameTimePreferences: (gameId: string) => GameTimePreferences | null;
   addGameAnswer: (gameId: string, answer: GameAnswer) => void;
   getGameProgress: (gameId: string) => GameProgress | null;
   getQuestionOrder: (gameId: string) => number[];
   getCurrentQuestionIndex: (gameId: string) => number;
   isQuestionAnswered: (gameId: string, questionId: string) => boolean;
   getQuestionAnswer: (gameId: string, questionId: string) => GameAnswer | null;
-  calculateGameScore: (gameId: string) => { correct: number; total: number };
+  calculateGameScore: (gameId: string) => {
+    correct: number;
+    total: number;
+    points: number;
+  };
   goToNextQuestion: (gameId: string) => void;
   goToPreviousQuestion: (gameId: string) => void;
   resetGame: (gameId: string) => void;
@@ -48,6 +67,7 @@ export const useGameAnswersStore = create<GameAnswersState>()(
   persist(
     (set, get) => ({
       games: {},
+      timePreferences: {},
 
       initializeGame: (gameId, totalQuestions) => {
         const { games } = get();
@@ -73,6 +93,44 @@ export const useGameAnswersStore = create<GameAnswersState>()(
             },
           },
         });
+      },
+
+      setGameTimeLimit: (gameId, timeLimitSeconds, autoStartTimer) =>
+        set((state) => {
+          const game = state.games[gameId];
+
+          return {
+            timePreferences: {
+              ...(state.timePreferences ?? {}),
+              [gameId]: { timeLimitSeconds, autoStartTimer },
+            },
+            games: {
+              ...state.games,
+              ...(game
+                ? {
+                    [gameId]: {
+                      ...game,
+                      timeLimitSeconds,
+                      autoStartTimer,
+                    },
+                  }
+                : {}),
+            },
+          };
+        }),
+
+      getGameTimePreferences: (gameId) => {
+        const { timePreferences = {}, games } = get();
+        return (
+          timePreferences[gameId] ??
+          (games[gameId]?.timeLimitSeconds !== undefined &&
+          games[gameId]?.autoStartTimer !== undefined
+            ? {
+                timeLimitSeconds: games[gameId].timeLimitSeconds,
+                autoStartTimer: games[gameId].autoStartTimer,
+              }
+            : null)
+        );
       },
 
       addGameAnswer: (gameId, answer) =>
@@ -129,14 +187,19 @@ export const useGameAnswersStore = create<GameAnswersState>()(
         const game = games[gameId];
 
         if (!game) {
-          return { correct: 0, total: 0 };
+          return { correct: 0, total: 0, points: 0 };
         }
 
         const answers = Object.values(game.answers);
         const correct = answers.filter((a) => a.isCorrect).length;
         const total = answers.length;
+        const points = answers.reduce(
+          (score, answer) =>
+            score + (answer.isCorrect ? (answer.points ?? 0) : 0),
+          0,
+        );
 
-        return { correct, total };
+        return { correct, total, points };
       },
 
       goToNextQuestion: (gameId) =>
@@ -191,6 +254,8 @@ export const useGameAnswersStore = create<GameAnswersState>()(
                 answers: {},
                 currentIndex: 0,
                 questionOrder,
+                timeLimitSeconds: undefined,
+                autoStartTimer: undefined,
                 completedAt: undefined,
               },
             },

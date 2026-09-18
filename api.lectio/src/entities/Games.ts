@@ -24,13 +24,14 @@ export namespace Games {
     questions: Games.QuestionsType[];
     createdAt?: Date;
   };
-  export type Type = "options" | "boolean";
+  export type Type = "options" | "boolean" | "charades" | "drawing" | "one_word" | "taboo";
   export type QuestionsType = {
     id?: string;
     text: string;
     difficulty: Games.Difficulty | null;
-    options: Games.OptionsType[];
     answer: string;
+    forbiddenWords?: string[];
+    options?: Games.OptionsType[];
   };
   export type OptionsType = {
     text: string;
@@ -41,4 +42,10 @@ export namespace Games {
     MEDIUM = "MEDIUM",
     HARD = "HARD",
   }
+
+  export const DifficultyPoints: Record<Difficulty, number> = {
+    [Difficulty.EASY]: 1,
+    [Difficulty.MEDIUM]: 2,
+    [Difficulty.HARD]: 3,
+  };
 }

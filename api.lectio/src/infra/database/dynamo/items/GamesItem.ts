@@ -75,7 +75,7 @@ export namespace GamesItem {
   export type Attributes = {
     id?: string;
     name: string;
-    type: "options" | "boolean";
+    type: Games.Type;
     questions: Games.QuestionsType[];
     createdAt: string;
   };

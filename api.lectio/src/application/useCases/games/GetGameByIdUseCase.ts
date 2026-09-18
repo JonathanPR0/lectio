@@ -21,6 +21,7 @@ export class GetGameByIdUseCase {
         id: q.id,
         text: q.text,
         difficulty: q.difficulty,
+        forbiddenWords: q.forbiddenWords,
         options: q.options,
         answer: q.answer,
       })),
@@ -41,7 +42,8 @@ export namespace GetGameByIdUseCase {
       id?: string;
       text: string;
       difficulty: Games.Difficulty | null;
-      options: Games.OptionsType[];
+      forbiddenWords?: string[];
+      options?: Games.OptionsType[];
       answer: string;
     }[];
   };
