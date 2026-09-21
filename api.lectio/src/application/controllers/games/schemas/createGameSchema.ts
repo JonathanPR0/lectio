@@ -62,7 +62,7 @@ const performanceQuestionSchema = z.object({
 
 const performanceGameSchema = z.object({
   name: z.string().min(1, "'name' is required"),
-  type: z.enum(["charades", "drawing", "one_word"]),
+  type: z.enum(["charades", "one_word"]),
   questions: z
     .array(performanceQuestionSchema)
     .min(1, "'questions' must have at least one question"),
@@ -102,12 +102,44 @@ const itoGameSchema = z.object({
     .min(1, "'questions' must have at least one question"),
 });
 
+// 6. Jogo Just One (Palavra-Chave)
+const justOneQuestionSchema = z.object({
+  category: z.string().min(1, "'category' is required"),
+  answer: z.string().min(1, "'answer' is required"),
+  difficulty: baseDifficultySchema.optional(),
+});
+
+const justOneGameSchema = z.object({
+  name: z.string().min(1, "'name' is required"),
+  type: z.literal("just_one"),
+  questions: z
+    .array(justOneQuestionSchema)
+    .min(1, "'questions' must have at least one question"),
+});
+
+// 7. Jogo Spy / Spyfall (Descubra o Espião)
+const spyQuestionSchema = z.object({
+  category: z.string().min(1, "'category' is required"),
+  answer: z.string().min(1, "'answer' is required"),
+  difficulty: baseDifficultySchema.optional(),
+});
+
+const spyGameSchema = z.object({
+  name: z.string().min(1, "'name' is required"),
+  type: z.literal("spy"),
+  questions: z
+    .array(spyQuestionSchema)
+    .min(1, "'questions' must have at least one question"),
+});
+
 export const createGameSchema = z.discriminatedUnion("type", [
   optionsGameSchema,
   booleanGameSchema,
   performanceGameSchema,
   tabooGameSchema,
   itoGameSchema,
+  justOneGameSchema,
+  spyGameSchema,
 ]);
 
 export type CreateGameBody = z.infer<typeof createGameSchema>;

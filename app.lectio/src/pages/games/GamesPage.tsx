@@ -12,12 +12,13 @@ import {
   CheckCircle2,
   ChevronRight,
   Gamepad2,
+  KeyRound,
   ListChecks,
-  Pencil,
   PersonStanding,
   Search,
   SlidersHorizontal,
   Type,
+  UserX,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,10 +36,11 @@ const gameTypeIcons: Record<GameType, React.ElementType> = {
   options: ListChecks,
   boolean: CheckCircle2,
   charades: PersonStanding,
-  drawing: Pencil,
   one_word: Type,
   taboo: Ban,
   ito: SlidersHorizontal,
+  just_one: KeyRound,
+  spy: UserX,
 };
 
 function GameCardSkeleton() {

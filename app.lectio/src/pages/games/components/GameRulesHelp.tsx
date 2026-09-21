@@ -6,10 +6,11 @@ import {
   BookOpen,
   ChevronDown,
   HelpCircle,
-  Pencil,
+  KeyRound,
   PersonStanding,
   SlidersHorizontal,
   Type,
+  UserX,
 } from "lucide-react";
 import { useState } from "react";
 import { gameTypeBadgeColors, getGameTypeRules } from "../lib/gameConfig";
@@ -17,10 +18,11 @@ import type { GameType } from "../lib/gameTypes";
 
 const gameTypeIcons: Record<string, React.ElementType> = {
   charades: PersonStanding,
-  drawing: Pencil,
   one_word: Type,
   taboo: Ban,
   ito: SlidersHorizontal,
+  just_one: KeyRound,
+  spy: UserX,
 };
 
 type GameRulesHelpProps = {

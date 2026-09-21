@@ -28,10 +28,11 @@ export namespace Games {
     | "options"
     | "boolean"
     | "charades"
-    | "drawing"
     | "one_word"
     | "taboo"
-    | "ito";
+    | "ito"
+    | "just_one"
+    | "spy";
   export type BaseQuestion = {
     id?: string;
     text: string;
@@ -65,12 +66,25 @@ export namespace Games {
     difficulty?: Games.Difficulty | null;
   };
 
+  export type CategoryAnswerQuestion = {
+    id?: string;
+    category: string;
+    answer: string;
+    difficulty?: Games.Difficulty | null;
+  };
+
+  export type JustOneQuestion = CategoryAnswerQuestion;
+  export type SpyQuestion = CategoryAnswerQuestion;
+  export type SpyfallQuestion = CategoryAnswerQuestion;
+
   export type QuestionsType =
     | OptionsQuestion
     | BooleanQuestion
     | PerformanceQuestion
     | TabooQuestion
-    | ItoQuestion;
+    | ItoQuestion
+    | JustOneQuestion
+    | SpyQuestion;
 
   export type OptionsType = {
     text: string;

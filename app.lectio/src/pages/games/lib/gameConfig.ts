@@ -10,10 +10,11 @@ export const gameTypeLabels: Record<GameType, string> = {
   options: "Opções",
   boolean: "Verdadeiro/Falso",
   charades: "Mímica",
-  drawing: "Desenho",
   one_word: "Uma Palavra",
   taboo: "Não Pode",
   ito: "Ito",
+  just_one: "Só Uma",
+  spy: "Espião"
 };
 
 /** Ícone lucide por tipo de jogo */
@@ -21,10 +22,11 @@ export const gameTypeIcons: Record<GameType, string> = {
   options: "list-checks",
   boolean: "check-circle-2",
   charades: "person-standing",
-  drawing: "pencil",
   one_word: "type",
   taboo: "ban",
   ito: "sliders-horizontal",
+  just_one: "key-round",
+  spy: "user-x",
 };
 
 /**
@@ -59,10 +61,11 @@ export const gameTypeBadgeColors: Record<GameType, string> = {
   options: "border-chart-1/40 bg-chart-1/90 text-secondary-foreground",
   boolean: "border-secondary/40 bg-secondary/80 text-secondary-foreground",
   charades: "border-chart-2/40 bg-chart-2/90 text-secondary-foreground",
-  drawing: "border-chart-3/40 bg-chart-3/90 text-secondary-foreground",
   one_word: "border-chart-4/40 bg-chart-4/90 text-secondary-foreground",
   taboo: "border-chart-5/40 bg-chart-5/90 text-secondary-foreground",
   ito: "border-chart-6/40 bg-chart-6/90 text-secondary-foreground",
+  just_one: "border-chart-3/40 bg-chart-3/90 text-secondary-foreground",
+  spy: "border-chart-7/40 bg-chart-7/90 text-secondary-foreground",
 };
 
 export interface GameRuleInfo {
@@ -73,7 +76,7 @@ export interface GameRuleInfo {
 }
 
 export const gameTypeRules: Record<
-  "charades" | "drawing" | "one_word" | "taboo" | "ito",
+  "charades" | "one_word" | "taboo" | "ito" | "just_one" | "spy",
   GameRuleInfo
 > = {
   charades: {
@@ -85,17 +88,6 @@ export const gameTypeRules: Record<
       "É estritamente proibido falar, emitir sons ou mover os lábios (dublagem).",
       "Não aponte diretamente para pessoas ou objetos presentes no ambiente.",
       "Use apenas linguagem corporal, gestos manuais e expressões faciais.",
-    ],
-  },
-  drawing: {
-    title: "Desenho",
-    badge: "Desenho",
-    summary:
-      "Desenhe em um papel, tela ou lousa para sua equipe adivinhar a palavra secreta.",
-    rules: [
-      "É proibido falar, fazer barulhos ou gesticular durante o desenho.",
-      "Não escreva letras, números, símbolos ou caracteres alfabéticos.",
-      "Apenas ilustrações visuais e desenhos são válidos.",
     ],
   },
   one_word: {
@@ -130,6 +122,30 @@ export const gameTypeRules: Record<
       "Sem revelar o número, discutam e se posicionem na escala do tema.",
       "Após todos se posicionarem, revelem os números para conferir se a ordem está correta.",
       "Quanto mais próximos da ordem certa, melhor o desempenho do grupo!",
+    ],
+  },
+  just_one: {
+    title: "Apenas Uma",
+    badge: "Apenas Uma",
+    summary:
+      "Um jogador tenta adivinhar a palavra secreta enquanto os outros fornecem exatamente uma palavra de pista cada. Pistas repetidas são anuladas!",
+    rules: [
+      "O jogador da vez vê apenas a categoria da palavra e não deve olhar a resposta.",
+      "Os outros jogadores olham a palavra secreta e escrevem 1 única palavra como pista.",
+      "Antes de mostrar ao adivinhador, comparem as pistas: qualquer pista idêntica é cancelada!",
+      "Se uma palavra for muito difícil, o grupo pode trocá-la por outra.",
+    ],
+  },
+  spy: {
+    title: "Descubra o Espião",
+    badge: "Espião",
+    summary:
+      "Um dos jogadores é o espião e só conhece a categoria. Todos os outros sabem a palavra/local secreto. Façam perguntas para descobrir quem é o espião!",
+    rules: [
+      "Cada jogador vira seu cartão em segredo para conferir seu papel.",
+      "O espião não conhece o local/palavra secreta, apenas a categoria geral.",
+      "Os jogadores conversam e fazem perguntas entre si sobre o tema sem entregar a resposta.",
+      "Ao final, votem: se os jogadores descobrirem o espião, cada inocente ganha 1 ponto. Se o espião vencer, ele ganha 2 pontos!",
     ],
   },
 };

@@ -27,6 +27,7 @@ type GameCompletionProps = {
   totalQuestions?: number;
   score: GameScore;
   groupScores?: GroupScore[];
+  spyScores?: number[];
   onReview?: () => void;
   onReset: () => void;
   onBack: () => void;
@@ -62,16 +63,20 @@ export function GameCompletion({
   totalQuestions,
   score,
   groupScores,
+  spyScores,
   onReview,
   onReset,
   onBack,
 }: GameCompletionProps) {
   const isIto = gameType === "ito";
+  const isSpy = gameType === "spy";
+  const isJustOne = gameType === "just_one";
+
   const percentage = score.total
     ? Math.round((score.correct / score.total) * 100)
     : 0;
 
-  const hasGroups = Boolean(!isIto && groupScores && groupScores.length > 1);
+  const hasGroups = Boolean(!isIto && !isSpy && !isJustOne && groupScores && groupScores.length > 1);
 
   // Ordenar grupos por pontos decrescentes
   const sortedGroups = hasGroups
@@ -80,19 +85,47 @@ export function GameCompletion({
 
   const winningGroup = sortedGroups[0];
 
+  // Ordenar jogadores do spy por pontos
+  const sortedSpyPlayers = isSpy && spyScores
+    ? spyScores
+        .map((pts, idx) => ({ playerIndex: idx, points: pts }))
+        .sort((a, b) => b.points - a.points)
+    : [];
+
+  const spyWinner = sortedSpyPlayers[0];
+
+  const justOneLabel = isJustOne
+    ? score.correct === 13
+      ? "Pontuação Perfeita! 🏆"
+      : score.correct >= 11
+        ? "Incrível! Excelente sintonia! ⭐"
+        : score.correct >= 9
+          ? "Muito bem! Ótimo trabalho em equipe! 🎯"
+          : score.correct >= 7
+            ? "Bom trabalho! Dá para melhorar! 👏"
+            : "Continuem treinando as pistas! 💪"
+    : "";
+
   const performanceLabel = isIto
     ? "Partida Concluída!"
-    : hasGroups
-      ? `Vitória do Grupo ${winningGroup.groupIndex + 1}!`
-      : percentage >= 90
-        ? "Excelente!"
-        : percentage >= 70
-          ? "Muito bem!"
-          : percentage >= 50
-            ? "Bom trabalho."
-            : "Continue praticando.";
+    : isSpy
+      ? spyWinner
+        ? `Vitória do Jogador ${spyWinner.playerIndex + 1}!`
+        : "Partida Concluída!"
+      : isJustOne
+        ? justOneLabel
+        : hasGroups
+          ? `Vitória do Grupo ${winningGroup.groupIndex + 1}!`
+          : percentage >= 90
+            ? "Excelente!"
+            : percentage >= 70
+              ? "Muito bem!"
+              : percentage >= 50
+                ? "Bom trabalho."
+                : "Continue praticando.";
 
-  const PerformanceIcon = isIto || percentage >= 70 || hasGroups ? Trophy : Target;
+  const PerformanceIcon =
+    isIto || isSpy || isJustOne || percentage >= 70 || hasGroups ? Trophy : Target;
 
   return (
     <div className="min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-center bg-background p-4 md:p-6">
@@ -133,6 +166,99 @@ export function GameCompletion({
                   <ScoreStat
                     label="Rodadas jogadas"
                     value={totalQuestions ?? score.total}
+                    highlight
+                  />
+                  <ScoreStat label="Formato" value="Cooperativo" />
+                </div>
+              </div>
+            ) : isSpy ? (
+              /* ── Visualização especial para Spy (Placar Individual) ─── */
+              <div className="space-y-4">
+                <div className="rounded-xl border border-chart-7/20 bg-chart-7/5 p-4 text-center space-y-1">
+                  <p className="text-sm font-bold text-foreground">
+                    Classificação Final da Partida
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {totalQuestions ?? score.total} rodadas jogadas com deduções e blefes!
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  {sortedSpyPlayers.map((player, rank) => {
+                    const color = PLAYER_COLORS[player.playerIndex % PLAYER_COLORS.length];
+                    const isChampion = rank === 0;
+
+                    return (
+                      <div
+                        key={player.playerIndex}
+                        className={cn(
+                          "flex items-center justify-between rounded-xl border p-3 transition-all",
+                          isChampion && "ring-2 ring-amber-500/50 shadow-xs",
+                        )}
+                        style={{
+                          backgroundColor: color.hiddenBg,
+                          borderColor: isChampion ? "var(--warning, #f59e0b)" : color.hiddenBorder,
+                        }}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-foreground">
+                            {rank === 0 ? (
+                              <Medal className="h-5 w-5 text-amber-500" />
+                            ) : rank === 1 ? (
+                              <Medal className="h-5 w-5 text-slate-400" />
+                            ) : rank === 2 ? (
+                              <Medal className="h-5 w-5 text-amber-700" />
+                            ) : (
+                              `${rank + 1}º`
+                            )}
+                          </span>
+                          <div>
+                            <span
+                              className="text-sm font-bold block"
+                              style={{ color: color.accentColor }}
+                            >
+                              {color.label}
+                            </span>
+                            {isChampion && (
+                              <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                                Campeão 🏆
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <span
+                            className="text-xl font-black tabular-nums"
+                            style={{ color: color.accentColor }}
+                          >
+                            {player.points}
+                          </span>
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                            pontos
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : isJustOne ? (
+              /* ── Visualização especial para Just One (Palavra-Chave) ── */
+              <div className="space-y-4 text-center">
+                <div className="rounded-xl border border-chart-3/20 bg-chart-3/5 p-5 space-y-2">
+                  <span className="text-5xl font-black text-chart-3 tabular-nums">
+                    {score.correct} <span className="text-2xl text-muted-foreground font-semibold">/ {totalQuestions ?? 13}</span>
+                  </span>
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground pt-1">
+                    Palavras Adivinhadas Corretamente
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 rounded-xl border bg-muted/30 p-4">
+                  <ScoreStat
+                    label="Acertos"
+                    value={`${score.correct} / ${totalQuestions ?? 13}`}
                     highlight
                   />
                   <ScoreStat label="Formato" value="Cooperativo" />

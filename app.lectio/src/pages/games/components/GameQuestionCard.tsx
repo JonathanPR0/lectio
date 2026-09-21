@@ -262,7 +262,7 @@ export function GameQuestionCard({
   onNext,
   onShowResults,
 }: GameQuestionCardProps) {
-  const questionText = question.text.replace(/\\n/g, "\n");
+  const questionText = question?.text?.replace(/\\n/g, "\n");
   const isChoice = isChoiceGame(type);
   const showTimer = isTimedGameType(type) && !!timeLimitSeconds;
 
