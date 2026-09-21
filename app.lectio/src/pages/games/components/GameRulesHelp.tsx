@@ -8,6 +8,7 @@ import {
   HelpCircle,
   Pencil,
   PersonStanding,
+  SlidersHorizontal,
   Type,
 } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,7 @@ const gameTypeIcons: Record<string, React.ElementType> = {
   drawing: Pencil,
   one_word: Type,
   taboo: Ban,
+  ito: SlidersHorizontal,
 };
 
 type GameRulesHelpProps = {

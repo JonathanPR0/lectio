@@ -16,6 +16,7 @@ import {
   Pencil,
   PersonStanding,
   Search,
+  SlidersHorizontal,
   Type,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -37,6 +38,7 @@ const gameTypeIcons: Record<GameType, React.ElementType> = {
   drawing: Pencil,
   one_word: Type,
   taboo: Ban,
+  ito: SlidersHorizontal,
 };
 
 function GameCardSkeleton() {

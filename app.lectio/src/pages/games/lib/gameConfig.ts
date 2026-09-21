@@ -13,6 +13,7 @@ export const gameTypeLabels: Record<GameType, string> = {
   drawing: "Desenho",
   one_word: "Uma Palavra",
   taboo: "Não Pode",
+  ito: "Ito",
 };
 
 /** Ícone lucide por tipo de jogo */
@@ -23,6 +24,7 @@ export const gameTypeIcons: Record<GameType, string> = {
   drawing: "pencil",
   one_word: "type",
   taboo: "ban",
+  ito: "sliders-horizontal",
 };
 
 /**
@@ -60,6 +62,7 @@ export const gameTypeBadgeColors: Record<GameType, string> = {
   drawing: "border-chart-3/40 bg-chart-3/90 text-secondary-foreground",
   one_word: "border-chart-4/40 bg-chart-4/90 text-secondary-foreground",
   taboo: "border-chart-5/40 bg-chart-5/90 text-secondary-foreground",
+  ito: "border-chart-6/40 bg-chart-6/90 text-secondary-foreground",
 };
 
 export interface GameRuleInfo {
@@ -70,7 +73,7 @@ export interface GameRuleInfo {
 }
 
 export const gameTypeRules: Record<
-  "charades" | "drawing" | "one_word" | "taboo",
+  "charades" | "drawing" | "one_word" | "taboo" | "ito",
   GameRuleInfo
 > = {
   charades: {
@@ -117,9 +120,21 @@ export const gameTypeRules: Record<
       "Use conceitos, analogias, contextos e sinônimos criativos para ajudar sua equipe a acertar.",
     ],
   },
+  ito: {
+    title: "Ito",
+    badge: "Ito",
+    summary:
+      "Cada jogador recebe um número secreto de 1 a 100. Sem revelar o número, todos se posicionam na escala temática e depois revelam para conferir a ordem!",
+    rules: [
+      "Cada jogador olha seu número secreto em particular — não mostre para ninguém!",
+      "Sem revelar o número, discutam e se posicionem na escala do tema.",
+      "Após todos se posicionarem, revelem os números para conferir se a ordem está correta.",
+      "Quanto mais próximos da ordem certa, melhor o desempenho do grupo!",
+    ],
+  },
 };
 
 export const getGameTypeRules = (type: GameType): GameRuleInfo | null => {
   if (type === "options" || type === "boolean") return null;
-  return gameTypeRules[type] ?? null;
+  return (gameTypeRules as Record<string, GameRuleInfo>)[type] ?? null;
 };

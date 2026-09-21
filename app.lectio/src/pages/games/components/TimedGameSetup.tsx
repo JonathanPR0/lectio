@@ -1,18 +1,25 @@
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Clock, Play, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import { Clock, Minus, Play, Plus, User, Users, Zap } from "lucide-react";
 import { useState } from "react";
 import type { GameType } from "../lib/gameTypes";
+import { PLAYER_COLORS } from "../lib/itoGameUtils";
 import { GameRulesHelp } from "./GameRulesHelp";
 import { TimeWheelPicker } from "./TimeWheelPicker";
 
 type TimedGameSetupProps = {
   gameName: string;
   gameType?: GameType;
-  onStart: (durationSeconds: number, autoStart: boolean) => void;
+  onStart: (
+    durationSeconds: number,
+    autoStart: boolean,
+    groupCount: number,
+  ) => void;
   initialTimeLimitSeconds?: number;
   initialAutoStart?: boolean;
+  initialGroupCount?: number;
 };
 
 export function TimedGameSetup({
@@ -21,6 +28,7 @@ export function TimedGameSetup({
   onStart,
   initialTimeLimitSeconds,
   initialAutoStart = false,
+  initialGroupCount = 1,
 }: TimedGameSetupProps) {
   const initialMinutes = initialTimeLimitSeconds
     ? Math.min(5, Math.floor(initialTimeLimitSeconds / 60))
@@ -34,6 +42,7 @@ export function TimedGameSetup({
   const [minutes, setMinutes] = useState(initialMinutes);
   const [seconds, setSeconds] = useState(initialSeconds);
   const [autoStart, setAutoStart] = useState(initialAutoStart);
+  const [groupCount, setGroupCount] = useState(initialGroupCount);
 
   const durationSeconds = Math.min(
     300,
@@ -42,6 +51,14 @@ export function TimedGameSetup({
   const canStart = durationSeconds > 0;
 
   const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+  const MIN_GROUPS = 1;
+  const MAX_GROUPS = 6;
+
+  const decrement = () =>
+    setGroupCount((n) => Math.max(MIN_GROUPS, n - 1));
+  const increment = () =>
+    setGroupCount((n) => Math.min(MAX_GROUPS, n + 1));
 
   return (
     <div className="min-h-[calc(100dvh-4rem)] bg-background px-4 py-8 md:px-6 flex items-start justify-center">
@@ -54,14 +71,112 @@ export function TimedGameSetup({
             {gameName}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Deslize o temporizador para definir o tempo por questão antes de
-            começar (máx. 5 minutos).
+            Defina o tempo por questão e o número de pessoas ou grupos que vão
+            competir.
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6 p-6 md:p-8">
           {/* Regras e explicação do tipo de jogo */}
           {gameType && <GameRulesHelp type={gameType} defaultOpen={false} />}
+
+          {/* ── Seleção de Jogadores / Grupos ──────────────────────── */}
+          <div className="space-y-4 rounded-xl border border-border/60 bg-muted/20 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {groupCount === 1 ? (
+                  <User className="h-4 w-4 text-primary" />
+                ) : (
+                  <Users className="h-4 w-4 text-primary" />
+                )}
+                <span className="text-sm font-semibold text-foreground">
+                  Modo de jogo
+                </span>
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                {groupCount === 1
+                  ? "Individual (1 jogador)"
+                  : `${groupCount} Grupos / Pessoas`}
+              </span>
+            </div>
+
+            {/* Stepper de grupos */}
+            <div className="flex items-center justify-center gap-6 py-1">
+              <button
+                type="button"
+                onClick={decrement}
+                disabled={groupCount <= MIN_GROUPS}
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-200",
+                  groupCount <= MIN_GROUPS
+                    ? "border-border/40 text-muted-foreground/40 cursor-not-allowed"
+                    : "border-primary/40 text-primary hover:bg-primary/10 hover:border-primary active:scale-95",
+                )}
+                aria-label="Diminuir grupos"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+
+              <motion.div
+                key={groupCount}
+                initial={{ scale: 0.8, opacity: 0.5 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.15, type: "spring", stiffness: 400 }}
+                className="flex flex-col items-center gap-0.5 min-w-[100px]"
+              >
+                <span className="text-4xl font-extrabold text-foreground tabular-nums leading-none">
+                  {groupCount}
+                </span>
+                <span className="text-xs text-muted-foreground font-medium">
+                  {groupCount === 1 ? "jogador / grupo" : "jogadores / grupos"}
+                </span>
+              </motion.div>
+
+              <button
+                type="button"
+                onClick={increment}
+                disabled={groupCount >= MAX_GROUPS}
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-200",
+                  groupCount >= MAX_GROUPS
+                    ? "border-border/40 text-muted-foreground/40 cursor-not-allowed"
+                    : "border-primary/40 text-primary hover:bg-primary/10 hover:border-primary active:scale-95",
+                )}
+                aria-label="Aumentar grupos"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Badges de preview de cores dos grupos */}
+            {groupCount > 1 && (
+              <div className="flex flex-wrap justify-center gap-2 pt-1 border-t border-border/40">
+                {Array.from({ length: groupCount }).map((_, i) => {
+                  const color = PLAYER_COLORS[i];
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 0.7, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.2, delay: i * 0.03 }}
+                      className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold"
+                      style={{
+                        background: color.hiddenBg,
+                        borderColor: color.hiddenBorder,
+                        color: color.accentColor,
+                      }}
+                    >
+                      <span
+                        className="h-2 w-2 rounded-full"
+                        style={{ background: color.accentColor }}
+                      />
+                      Grupo {i + 1}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Drum Picker iOS Style */}
           <div className="space-y-2">
@@ -104,7 +219,16 @@ export function TimedGameSetup({
                   <strong className="font-semibold text-foreground">
                     {formattedTime}
                   </strong>{" "}
-                  ({durationSeconds} segundos).
+                  ({durationSeconds}s)
+                  {groupCount > 1 && (
+                    <>
+                      , com vez alternada entre os{" "}
+                      <strong className="font-semibold text-foreground">
+                        {groupCount} grupos
+                      </strong>
+                      .
+                    </>
+                  )}
                 </>
               ) : (
                 <span className="text-destructive font-medium">
@@ -157,11 +281,13 @@ export function TimedGameSetup({
           <Button
             className="w-full font-semibold gap-2"
             size="lg"
-            onClick={() => onStart(durationSeconds, autoStart)}
+            onClick={() => onStart(durationSeconds, autoStart, groupCount)}
             disabled={!canStart}
           >
             <Play className="h-4 w-4 fill-current" />
-            Iniciar jogo
+            {groupCount > 1
+              ? `Iniciar jogo (${groupCount} grupos)`
+              : "Iniciar jogo"}
           </Button>
         </CardContent>
       </Card>

@@ -4,7 +4,8 @@ export type GameType =
   | "charades"
   | "drawing"
   | "one_word"
-  | "taboo";
+  | "taboo"
+  | "ito";
 
 export type GameDifficulty = "EASY" | "MEDIUM" | "HARD";
 
@@ -15,14 +16,45 @@ export interface GameOption {
   isAnswer: boolean;
 }
 
-export interface GameQuestion {
+export interface BaseGameQuestion {
   id: string;
   text: string;
-  options?: GameOption[];
-  answer: string;
-  forbiddenWords?: string[];
   difficulty: GameDifficulty | null;
 }
+
+export interface OptionsGameQuestion extends BaseGameQuestion {
+  options: GameOption[];
+  answer: string;
+}
+
+export interface BooleanGameQuestion extends BaseGameQuestion {
+  options?: GameOption[];
+  answer: string;
+}
+
+export interface PerformanceGameQuestion extends BaseGameQuestion {
+  answer: string;
+}
+
+export interface TabooGameQuestion extends BaseGameQuestion {
+  forbiddenWords: string[];
+  answer: string;
+}
+
+export interface ItoGameQuestion {
+  id: string;
+  text: string;
+  min_label: string;
+  max_label: string;
+  difficulty?: GameDifficulty | null;
+}
+
+export type GameQuestion =
+  | OptionsGameQuestion
+  | BooleanGameQuestion
+  | PerformanceGameQuestion
+  | TabooGameQuestion
+  | ItoGameQuestion;
 
 export interface Game {
   id: string;
@@ -41,4 +73,5 @@ export const isTimedGameType = (type: GameType): type is TimedGameType =>
   type === "charades" ||
   type === "drawing" ||
   type === "one_word" ||
-  type === "taboo";
+  type === "taboo"||
+  type === "ito";

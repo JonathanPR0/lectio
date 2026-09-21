@@ -24,19 +24,59 @@ export namespace Games {
     questions: Games.QuestionsType[];
     createdAt?: Date;
   };
-  export type Type = "options" | "boolean" | "charades" | "drawing" | "one_word" | "taboo";
-  export type QuestionsType = {
+  export type Type =
+    | "options"
+    | "boolean"
+    | "charades"
+    | "drawing"
+    | "one_word"
+    | "taboo"
+    | "ito";
+  export type BaseQuestion = {
     id?: string;
     text: string;
     difficulty: Games.Difficulty | null;
-    answer: string;
-    forbiddenWords?: string[];
-    options?: Games.OptionsType[];
   };
+
+  export type OptionsQuestion = BaseQuestion & {
+    options: Games.OptionsType[];
+    answer: string;
+  };
+
+  export type BooleanQuestion = BaseQuestion & {
+    options?: Games.OptionsType[];
+    answer: string;
+  };
+
+  export type PerformanceQuestion = BaseQuestion & {
+    answer: string;
+  };
+
+  export type TabooQuestion = BaseQuestion & {
+    forbiddenWords: string[];
+    answer: string;
+  };
+
+  export type ItoQuestion = {
+    id?: string;
+    text: string;
+    min_label: string;
+    max_label: string;
+    difficulty?: Games.Difficulty | null;
+  };
+
+  export type QuestionsType =
+    | OptionsQuestion
+    | BooleanQuestion
+    | PerformanceQuestion
+    | TabooQuestion
+    | ItoQuestion;
+
   export type OptionsType = {
     text: string;
     isAnswer: boolean;
   };
+
   export enum Difficulty {
     EASY = "EASY",
     MEDIUM = "MEDIUM",
@@ -49,3 +89,4 @@ export namespace Games {
     [Difficulty.HARD]: 3,
   };
 }
+

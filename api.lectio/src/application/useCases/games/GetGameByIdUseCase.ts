@@ -17,14 +17,7 @@ export class GetGameByIdUseCase {
       id: game.id,
       name: game.name,
       type: game.type,
-      questions: game.questions.map((q) => ({
-        id: q.id,
-        text: q.text,
-        difficulty: q.difficulty,
-        forbiddenWords: q.forbiddenWords,
-        options: q.options,
-        answer: q.answer,
-      })),
+      questions: game.questions,
     };
   }
 }
@@ -38,13 +31,6 @@ export namespace GetGameByIdUseCase {
     id: string;
     name: string;
     type: Games.Type;
-    questions: {
-      id?: string;
-      text: string;
-      difficulty: Games.Difficulty | null;
-      forbiddenWords?: string[];
-      options?: Games.OptionsType[];
-      answer: string;
-    }[];
+    questions: Games.QuestionsType[];
   };
 }
