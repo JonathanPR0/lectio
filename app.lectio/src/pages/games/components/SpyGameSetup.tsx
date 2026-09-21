@@ -1,20 +1,23 @@
+import AlertPopUp from "@/components/custom/AlertPopUp";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Minus, Play, Plus, UserX, Users } from "lucide-react";
+import { ChevronLeft, Minus, Play, Plus, UserX, Users } from "lucide-react";
 import { useState } from "react";
 import { PLAYER_COLORS } from "../lib/itoGameUtils";
 import { GameRulesHelp } from "./GameRulesHelp";
 
 type SpyGameSetupProps = {
   gameName: string;
+  onBack: () => void;
   onStart: (playerCount: number) => void;
   initialPlayerCount?: number;
 };
 
 export function SpyGameSetup({
   gameName,
+  onBack,
   onStart,
   initialPlayerCount = 4,
 }: SpyGameSetupProps) {
@@ -36,6 +39,20 @@ export function SpyGameSetup({
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-lg"
       >
+        <AlertPopUp
+          title="Sair do jogo?"
+          description="Seu progresso atual será perdido."
+          action={onBack}
+        >
+          <button
+            type="button"
+            className="mb-3 flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Voltar para jogos
+          </button>
+        </AlertPopUp>
+
         <Card className="overflow-hidden border-chart-7/20 shadow-xl shadow-chart-7/5">
           <CardHeader className="border-b bg-muted/30 p-6 space-y-1">
             <div className="flex items-center gap-2 text-chart-7 mb-1">

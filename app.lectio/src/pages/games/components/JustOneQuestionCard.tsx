@@ -89,10 +89,12 @@ export function JustOneQuestionCard({
                     <User className="h-3.5 w-3.5" />
                     Adivinhador da Vez
                   </Badge>
-
                 </div>
                 <p className="text-sm font-semibold text-foreground">
-                  Adivinhar: <span className="text-primary font-bold">{question.category}</span>
+                  Adivinhar:{" "}
+                  <span className="text-primary font-bold">
+                    {question.category}
+                  </span>
                 </p>
               </div>
 
@@ -254,9 +256,7 @@ export function JustOneQuestionCard({
                     <ThumbsDown className="h-5 w-5 shrink-0 text-destructive" />
                   )}
                   <span className="text-sm font-bold">
-                    {isCorrect
-                      ? "Marcado como acerto!"
-                      : "Marcado como erro!"}
+                    {isCorrect ? "Marcado como acerto!" : "Marcado como erro!"}
                   </span>
                 </div>
 
@@ -308,11 +308,8 @@ export function JustOneQuestionCard({
               </Button>
             )}
           </div>
-
         </CardFooter>
       </Card>
     </motion.div>
   );
 }
-
-

@@ -7,7 +7,13 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Eye, EyeOff, RotateCcw } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  RotateCcw,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ItoGameQuestion } from "../lib/gameTypes";
 import { PLAYER_COLORS, type PlayerColor } from "../lib/itoGameUtils";
@@ -57,7 +63,11 @@ function PlayerCard({
           stiffness: 180,
           damping: 22,
         }}
-        style={{ transformStyle: "preserve-3d", position: "relative", height: "100%" }}
+        style={{
+          transformStyle: "preserve-3d",
+          position: "relative",
+          height: "100%",
+        }}
       >
         {/* ── FRENTE (oculto) ───────────────────────────────────── */}
         <div
@@ -108,7 +118,11 @@ function PlayerCard({
           <div className="flex flex-col items-center gap-1.5">
             <motion.div
               animate={isRevealed ? {} : { scale: [1, 1.08, 1] }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+              transition={{
+                repeat: Infinity,
+                duration: 2.5,
+                ease: "easeInOut",
+              }}
               className="flex h-11 w-11 items-center justify-center rounded-full"
               style={{ backgroundColor: color.iconBg }}
             >
@@ -139,23 +153,23 @@ function PlayerCard({
             WebkitBackfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
             background: color.revealedBg,
-            borderColor: "transparent",
+            borderColor: color.accentColor,
             color: color.revealedText,
           }}
         >
           {/* Nome do jogador */}
           <div className="flex items-center gap-1.5 opacity-90">
-            <span className="text-xs font-black uppercase tracking-widest text-white">
+            <span className="text-xs font-black uppercase tracking-widest dark:text-white">
               {color.label}
             </span>
           </div>
 
           {/* Número secreto */}
           <div className="flex flex-col items-center gap-0">
-            <span className="text-6xl font-black leading-none tabular-nums text-white drop-shadow-sm">
+            <span className="text-6xl font-black leading-none tabular-nums dark:text-white drop-shadow-sm">
               {playerNumber}
             </span>
-            <span className="text-[11px] font-bold opacity-90 text-white mt-1">
+            <span className="text-[11px] font-bold opacity-90 dark:text-white mt-1">
               seu número secreto
             </span>
           </div>
@@ -164,7 +178,7 @@ function PlayerCard({
           <button
             type="button"
             onClick={handleHide}
-            className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-extrabold transition-all duration-150 active:scale-95 bg-white/25 hover:bg-white/35 text-white backdrop-blur-sm shadow-xs"
+            className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-extrabold transition-all duration-150 active:scale-95 bg-white/25 hover:bg-white/35 dark:text-white backdrop-blur-sm shadow-xs"
           >
             <RotateCcw className="h-3.5 w-3.5 stroke-[2.5]" />
             Virar
@@ -366,7 +380,7 @@ export function ItoQuestionCard({
                 {isLastQuestion ? "Finalizar jogo" : "Próxima questão"}
                 <ChevronRight className="h-4 w-4" />
               </Button>
-            ) :(
+            ) : (
               <Button
                 variant="ghost"
                 size="sm"
@@ -380,12 +394,8 @@ export function ItoQuestionCard({
               </Button>
             )}
           </div>
-
-
         </CardFooter>
       </Card>
     </motion.div>
   );
 }
-
-

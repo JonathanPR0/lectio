@@ -89,7 +89,9 @@ export function GameQuestions() {
   const questionOrder = gameId ? getQuestionOrder(gameId) : [];
   const currentIndex = gameId ? getCurrentQuestionIndex(gameId) : 0;
   const currentQuestionIndex = questionOrder[currentIndex];
-  const currentQuestion = game?.questions ? game.questions[currentQuestionIndex] : undefined;
+  const currentQuestion = game?.questions
+    ? game.questions[currentQuestionIndex]
+    : undefined;
   const itoPlayerCount = gameProgress?.itoPlayerCount ?? 3;
   const spyPlayerCount = gameProgress?.spyPlayerCount ?? 4;
 
@@ -100,12 +102,24 @@ export function GameQuestions() {
       currentQuestion.id,
       itoPlayerCount,
     );
-  }, [isIto, gameId, currentQuestion?.id, itoPlayerCount, getOrGenerateItoRoundNumbers]);
+  }, [
+    isIto,
+    gameId,
+    currentQuestion?.id,
+    itoPlayerCount,
+    getOrGenerateItoRoundNumbers,
+  ]);
 
   const spyRound = useMemo(() => {
     if (!isSpy || !gameId || !currentQuestion?.id) return { spyIndex: 0 };
     return getOrGenerateSpyRound(gameId, currentQuestion.id, spyPlayerCount);
-  }, [isSpy, gameId, currentQuestion?.id, spyPlayerCount, getOrGenerateSpyRound]);
+  }, [
+    isSpy,
+    gameId,
+    currentQuestion?.id,
+    spyPlayerCount,
+    getOrGenerateSpyRound,
+  ]);
 
   useMetaTags({
     title: game ? `${game.name} - Lectio` : "Jogo - Lectio",
@@ -122,7 +136,14 @@ export function GameQuestions() {
       // Spy: aguarda configuração do número de jogadores
       if (isSpy && !spyConfigured) return;
       // Outros jogos temporizados: aguarda configuração de tempo e grupos
-      if (!isIto && !isSpy && !isJustOne && isTimedGameType(game.type) && !timeConfigured) return;
+      if (
+        !isIto &&
+        !isSpy &&
+        !isJustOne &&
+        isTimedGameType(game.type) &&
+        !timeConfigured
+      )
+        return;
 
       if (!progress) {
         if (isJustOne) {
@@ -201,11 +222,18 @@ export function GameQuestions() {
     return null;
   }
 
+  const handleLeaveGame = () => {
+    resetGame(gameId);
+    setIsFinished(false);
+    navigate("/games");
+  };
+
   // ── Tela de setup para jogos de Ito ──────────────────────────────────────
   if (isIto && !itoConfigured) {
     return (
       <ItoGameSetup
         gameName={game.name}
+        onBack={handleLeaveGame}
         initialTimeLimitSeconds={timePreferences?.timeLimitSeconds}
         initialAutoStart={timePreferences?.autoStartTimer}
         onStart={(playerCount, durationSeconds, autoStart) => {
@@ -224,6 +252,7 @@ export function GameQuestions() {
     return (
       <SpyGameSetup
         gameName={game.name}
+        onBack={handleLeaveGame}
         initialPlayerCount={spyPlayerCount}
         onStart={(playerCount) => {
           if (!gameProgress) {
@@ -238,13 +267,18 @@ export function GameQuestions() {
 
   // ── Tela de setup para jogos temporizados (não-Ito, não-Spy, não-JustOne) ───
   const requiresTimeSetup =
-    !isIto && !isSpy && !isJustOne && isTimedGameType(game.type) && !timeConfigured;
+    !isIto &&
+    !isSpy &&
+    !isJustOne &&
+    isTimedGameType(game.type) &&
+    !timeConfigured;
 
   if (requiresTimeSetup) {
     return (
       <TimedGameSetup
         gameName={game.name}
         gameType={game.type}
+        onBack={handleLeaveGame}
         initialTimeLimitSeconds={timePreferences?.timeLimitSeconds}
         initialAutoStart={timePreferences?.autoStartTimer}
         initialGroupCount={gameProgress?.groupCount ?? 1}
@@ -259,7 +293,8 @@ export function GameQuestions() {
     );
   }
 
-  const effectiveTotal = questionOrder.length > 0 ? questionOrder.length : game.questions.length;
+  const effectiveTotal =
+    questionOrder.length > 0 ? questionOrder.length : game.questions.length;
   const gameScore = calculateGameScore(gameId);
   const answeredCount = gameScore.total;
   const progressPercent = (answeredCount / effectiveTotal) * 100;
@@ -278,12 +313,6 @@ export function GameQuestions() {
   const allQuestionsAnswered = gameScore.total === effectiveTotal;
   const isGameCompleted =
     (isFinished || (allQuestionsAnswered && effectiveTotal > 0)) && !reviewMode;
-
-  const handleLeaveGame = () => {
-    resetGame(gameId);
-    setIsFinished(false);
-    navigate("/games");
-  };
 
   const submitAnswer = (isCorrect: boolean) => {
     if (!currentQuestion) return;
@@ -312,7 +341,11 @@ export function GameQuestions() {
   };
 
   const handleSwapJustOneQuestion = () => {
-    const newIdx = swapJustOneQuestion(gameId, currentIndex, game.questions.length);
+    const newIdx = swapJustOneQuestion(
+      gameId,
+      currentIndex,
+      game.questions.length,
+    );
     if (newIdx !== null) {
       toast.success("Palavra trocada com sucesso!");
     } else {
@@ -470,8 +503,10 @@ export function GameQuestions() {
 
   // ── Render Spy (Descubra o Espião) ─────────────────────────────────────────
   if (isSpy) {
-    const spyQuestion = currentQuestion as unknown as CategoryAnswerGameQuestion;
-    const currentRoundWinner = gameProgress?.spyRounds?.[spyQuestion.id]?.winner;
+    const spyQuestion =
+      currentQuestion as unknown as CategoryAnswerGameQuestion;
+    const currentRoundWinner =
+      gameProgress?.spyRounds?.[spyQuestion.id]?.winner;
 
     return (
       <div className="min-h-[calc(100dvh-4rem)] bg-background px-4 py-5 md:px-6 md:py-8">
@@ -571,7 +606,8 @@ export function GameQuestions() {
 
   // ── Render Just One (Palavra-Chave) ────────────────────────────────────────
   if (isJustOne) {
-    const justOneQuestion = currentQuestion as unknown as CategoryAnswerGameQuestion;
+    const justOneQuestion =
+      currentQuestion as unknown as CategoryAnswerGameQuestion;
     const remainingReserve = gameProgress?.justOneReserveIndices?.length ?? 0;
 
     return (
